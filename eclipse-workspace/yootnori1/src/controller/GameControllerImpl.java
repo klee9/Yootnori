@@ -1,6 +1,6 @@
 package controller;
 
-import view.MainWindow;
+import ui.MainWindow;
 
 public class GameControllerImpl implements GameController {
  private MainWindow mainWindow;

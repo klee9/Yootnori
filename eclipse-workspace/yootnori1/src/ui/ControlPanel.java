@@ -1,7 +1,10 @@
-package view;
+package ui;
+
 import javax.swing.*;
 
 import controller.GameController;
+import model.Player;
+import model.TossResult;
 
 import java.awt.*;
 
@@ -29,4 +32,14 @@ public class ControlPanel extends JPanel {
         add(randomYutButton);
         add(fixedYutButton);
     }
+
+	public void displayThrowResult(TossResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void updateTurnLabel(Player player) {
+		// TODO Auto-generated method stub
+
+	}
 }

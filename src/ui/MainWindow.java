@@ -62,7 +62,7 @@ public class MainWindow extends JFrame implements UiInterface {
     @Override
     public void showGameScreen(int playerCount, int tokenCount, String shapeType) {
         boardPanel = new BoardPanel(playerCount, tokenCount, shapeType);
-        controlPanel = new ControlPanel(controller);
+        controlPanel = new ControlPanel(controller, boardPanel);
         PlayerInfoPanel infoPanel = new PlayerInfoPanel(playerCount, tokenCount);
 
         JPanel gamePanel = new JPanel(new BorderLayout());

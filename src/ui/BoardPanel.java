@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import model.TossResult;
 
 public class BoardPanel extends JPanel {
 
@@ -43,6 +44,41 @@ public class BoardPanel extends JPanel {
             }
             default -> throw new IllegalArgumentException("지원하지 않는 shapeType: " + shapeType);
         }
+    }
+
+    public void showYutImage(TossResult result) {
+        String fileName = switch (result) {
+            case 도 -> "do.png";
+            case 개 -> "gae.png";
+            case 걸 -> "geol.png";
+            case 윷 -> "yut.png";
+            case 모 -> "mo.png";
+            case 빽도 -> "backdo.png";
+        };
+
+        ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + fileName));
+        Image scaled = icon.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        ImageIcon resized = new ImageIcon(scaled);
+
+        JLabel imageLabel = new JLabel(resized);
+
+        // 중앙에 위치시키기
+        int panelWidth = getWidth();
+        int panelHeight = getHeight();
+        int imgWidth = resized.getIconWidth();
+        int imgHeight = resized.getIconHeight();
+        imageLabel.setBounds((panelWidth - imgWidth) / 2, (panelHeight - imgHeight) / 2, imgWidth, imgHeight);
+
+        setLayout(null);
+        add(imageLabel);
+        repaint();
+
+        Timer timer = new Timer(3000, e -> {
+            remove(imageLabel);
+            repaint();
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     @Override

@@ -16,7 +16,7 @@ public class StartPanel extends JPanel {
         gbc.insets = new Insets(8, 8, 8, 8); // 컴포넌트 간 기본 간격
 
         // 윷 이미지
-        ImageIcon original = new ImageIcon(getClass().getResource("/start_yut.png"));
+        ImageIcon original = new ImageIcon(getClass().getResource("/images/start_yut.png"));
         Image scaled = original.getImage().getScaledInstance(160, 160, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaled));
         gbc.gridx = 0;

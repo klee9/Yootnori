@@ -29,20 +29,45 @@ public class BoardPanel extends JPanel {
         setPreferredSize(new Dimension(800, 800));
         setBackground(Color.WHITE);
 
-        switch (shapeType) {
-            case "사각형" -> {
-                nodeGridPositions = createSquareNodePositions();
-                lineConnections = createSquareLineConnections();
-            }
-            case "오각형" -> {
-                nodeGridPositions = createPentagonNodePositions();
-                lineConnections = createPentagonLineConnections();
-            }
-            case "육각형" -> {
-                nodeGridPositions = createHexagonNodePositions();
-                lineConnections = createHexagonLineConnections();
-            }
-            default -> throw new IllegalArgumentException("지원하지 않는 shapeType: " + shapeType);
+        List<Point2D.Double> raw;
+        List<Point2D.Double[]> rawLines;
+
+        if ("사각형".equals(shapeType)) {
+            raw = createSquareNodePositions();
+            rawLines = createSquareLineConnections();
+        } else if ("오각형".equals(shapeType)) {
+            raw = createPentagonNodePositions();
+            rawLines = createPentagonLineConnections(raw);
+        } else if ("육각형".equals(shapeType)) {
+            raw = createHexagonNodePositions();
+            rawLines = createHexagonLineConnections(raw);
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 shapeType: " + shapeType);
+        }
+
+        int n = raw.size();
+        int[] idToRaw = new int[n];
+        for (int i = 0; i < n; i++)
+            idToRaw[i] = i;
+        int[] rawToId = new int[n];
+        for (int i = 0; i < n; i++)
+            rawToId[idToRaw[i]] = i;
+
+        nodeGridPositions = new ArrayList<>(n);
+        for (int id = 0; id < n; id++) {
+            nodeGridPositions.add(raw.get(idToRaw[id]));
+        }
+
+        lineConnections = new ArrayList<>(rawLines.size());
+        for (Point2D.Double[] edge : rawLines) {
+            int fromRaw = raw.indexOf(edge[0]);
+            int toRaw = raw.indexOf(edge[1]);
+            int fromId = rawToId[fromRaw];
+            int toId = rawToId[toRaw];
+            lineConnections.add(new Point2D.Double[]{
+                nodeGridPositions.get(fromId),
+                nodeGridPositions.get(toId)
+            });
         }
     }
 
@@ -272,29 +297,18 @@ public class BoardPanel extends JPanel {
         return nodes;
     }
 
-    private List<Point2D.Double[]> createPentagonLineConnections() {
+    private List<Point2D.Double[]> createPentagonLineConnections(List<Point2D.Double> raw) {
         List<Point2D.Double[]> lines = new ArrayList<>();
-
         for (int i = 0; i < 20; i++) {
-            lines.add(new Point2D.Double[]{
-                nodeGridPositions.get(i),
-                nodeGridPositions.get((i + 1) % 20)
-            });
+            lines.add(new Point2D.Double[]{ raw.get(i), raw.get((i + 1) % 20) });
         }
-
-        int centerIdx = 20;
-        int innerStartIdx = 21;
-
+        int center = 20, start = 21;
         for (int i = 0; i < 5; i++) {
-            int tip = i * 4;
-            int inner1 = innerStartIdx + i * 2;
-            int inner2 = innerStartIdx + i * 2 + 1;
-
-            lines.add(new Point2D.Double[]{nodeGridPositions.get(centerIdx), nodeGridPositions.get(inner1)});
-            lines.add(new Point2D.Double[]{nodeGridPositions.get(inner1), nodeGridPositions.get(inner2)});
-            lines.add(new Point2D.Double[]{nodeGridPositions.get(inner2), nodeGridPositions.get(tip)});
+            int tip = i * 4, i1 = start + 2 * i, i2 = i1 + 1;
+            lines.add(new Point2D.Double[]{ raw.get(center), raw.get(i1) });
+            lines.add(new Point2D.Double[]{ raw.get(i1), raw.get(i2) });
+            lines.add(new Point2D.Double[]{ raw.get(i2), raw.get(tip) });
         }
-
         return lines;
     }
 
@@ -344,30 +358,19 @@ public class BoardPanel extends JPanel {
         return nodes;
     }
 
-    private List<Point2D.Double[]> createHexagonLineConnections() {
+    private List<Point2D.Double[]> createHexagonLineConnections(List<Point2D.Double> raw) {
         List<Point2D.Double[]> lines = new ArrayList<>();
-
-        int outer = 24; // 6 * 4
+        int outer = 24;
         for (int i = 0; i < outer; i++) {
-            lines.add(new Point2D.Double[]{
-                nodeGridPositions.get(i),
-                nodeGridPositions.get((i + 1) % outer)
-            });
+            lines.add(new Point2D.Double[]{ raw.get(i), raw.get((i + 1) % outer) });
         }
-
-        int centerIdx = outer;
-        int innerStartIdx = outer + 1;
-
+        int center = outer, start = outer + 1;
         for (int i = 0; i < 6; i++) {
-            int tip = i * 4;
-            int inner1 = innerStartIdx + i * 2;
-            int inner2 = innerStartIdx + i * 2 + 1;
-
-            lines.add(new Point2D.Double[]{nodeGridPositions.get(centerIdx), nodeGridPositions.get(inner1)});
-            lines.add(new Point2D.Double[]{nodeGridPositions.get(inner1), nodeGridPositions.get(inner2)});
-            lines.add(new Point2D.Double[]{nodeGridPositions.get(inner2), nodeGridPositions.get(tip)});
+            int tip = i * 4, i1 = start + 2 * i, i2 = i1 + 1;
+            lines.add(new Point2D.Double[]{ raw.get(center), raw.get(i1) });
+            lines.add(new Point2D.Double[]{ raw.get(i1), raw.get(i2) });
+            lines.add(new Point2D.Double[]{ raw.get(i2), raw.get(tip) });
         }
-
         return lines;
     }
 

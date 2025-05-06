@@ -33,7 +33,12 @@ public class Game  {
     }
 
     public boolean isGameOver() { // 게임이 끝났는지 확인한다.
-        return players.stream().anyMatch(Player::hasFinished);
+        for (Player p : players) {
+            if (p.hasFinished()) {
+                return true;
+            }
+        }
+    return false;
     }
 
     public GameState getState() {

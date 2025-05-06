@@ -20,7 +20,6 @@ public class Board {
         return positions;
     }
 
-
     public Position getStartPosition() {
         return positions.get(0); // assuming the first element is the starting position
     }

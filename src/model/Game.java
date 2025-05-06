@@ -66,7 +66,7 @@ public class Game  {
     }
 
 
-    private Token getTokenAt( Position position){ // 해당 위치에 말이 있는지 확인한다.
+    private Token getTokenAt( Position position){ // 해당 위치의 말을 가지고 온다.
         for (Player player : players) {
             for (Token t : player.getTokens()) {
                 if (t.getPosition().equals(position) && !t.isFinished()) {

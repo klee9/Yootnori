@@ -59,4 +59,3 @@ public class Token {
     public Player getOwner() { return owner; }
     public List<Token> getStackedTokens(){ return stackedTokens; }
 }
-

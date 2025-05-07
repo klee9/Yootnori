@@ -1,11 +1,10 @@
 package model;
 
-import ui.MainWindow;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Game {
     private int playerCount;
@@ -20,9 +19,9 @@ public class Game {
 
     public Game(int playerCount, int tokenCount, int shapeType) {
         this.players = new ArrayList<>();
-        for( int i = 0; i < playerCount; i++){
-            Color color = Color.BLACK;
-            Player player = new Player("플레이어" + (i + 1), i, tokenCount, color);
+        Color[] palette = {Color.BLUE, Color.RED, Color.YELLOW, Color.GREEN};
+        for (int i = 0; i < playerCount; i++) {
+            Player player = new Player("Player " + (i + 1), i, tokenCount, palette[i]);
             players.add(player);
         }
         this.board = new Board(shapeType);
@@ -39,12 +38,95 @@ public class Game {
 
 
     // 게임 흐름 관련 함수
-    public Game startGame(int playerCount, int tokenCount, int shapeType) {
-        Game game = new Game(playerCount, tokenCount, shapeType);
-        MainWindow mainWindow = new MainWindow();
-        setState(GameState.RUNNING);
+    // startGame은 디버깅 할 때 사용해서 나중에 합칠 때 수정하면 될 것 같아요
+    public void startGame(int playerCount, int tokenCount, int shapeType) {
+        //MainWindow mainWindow = new MainWindow();
         // mainWindow.showGameScreen(playerCount, tokenCount, shapeType);
-        return game;
+        setState(GameState.RUNNING);
+        Scanner scanner = new Scanner(System.in);
+        while (gameState == GameState.RUNNING) {
+            // 게임 시작 및 차례 테스팅
+            while (getCurrentPlayer().getTurns() > 0) {
+                int result = 0, choice = 0;
+                String yutChoice;
+                boolean moveResult = false;
+
+                System.out.printf("[게임 상태 표시] 현재 플레이어: %s, 남은 턴: %d\n", getCurrentPlayer().getName(), getCurrentPlayer().getTurns());
+                System.out.println("[윷 던지기] t: 랜덤 윷 던지기, s: 지정 윷 던지기");
+
+                // 윷 던지기 테스팅
+                yutChoice = scanner.nextLine();
+                if (yutChoice.equals("t")) {
+                    result = randomThrow();
+                    System.out.printf("결과: %d\n", result);
+                }
+                else if (yutChoice.equals("s")) {
+                    System.out.println("[지정 윷 던지기] 결과 선택 -1 ~ 5");
+                    result = scanner.nextInt(); scanner.nextLine();
+                }
+
+                // 말 이동, 업기, 잡기 테스팅
+                System.out.println("[말 이동] 어느 말을 움직일까요?");
+                for (int i = 0; i < getCurrentPlayer().getTokens().size(); i++) {
+                    int posInfo = -1;
+                    if (getCurrentPlayer().getTokens().get(i).getPosition() != null) { posInfo = getCurrentPlayer().getTokens().get(i).getPosition().getId(); }
+                    System.out.printf("%d) %d (on %d, stacked: ", i+1, getCurrentPlayer().getTokens().get(i).getId(), posInfo);
+                    List<Token> stackedTokens = getCurrentPlayer().getTokens().get(i).getStackedTokens();
+                    if (!stackedTokens.isEmpty()) {
+                        for (Token token : stackedTokens) {
+                            System.out.printf("%d, ", token.getId());
+                        }
+                    }
+                    System.out.println(")");
+                }
+
+                choice = scanner.nextInt();scanner.nextLine();
+                currentToken = getCurrentPlayer().getTokens().get(choice-1);
+                if (currentToken.getPosition() == null)
+                    currentToken.moveTo(board.getPositions().get(0));
+
+
+                while (!moveResult) {
+                    System.out.println("[말 이동] 어디로 움직일까요?");
+                    int posId = scanner.nextInt(); scanner.nextLine();
+                    moveResult = applyMoveTo(currentToken, board.getPositions().get(posId), result);
+                    if (moveResult) {
+                        System.out.printf("[말 이동] %d번째 말이 %d번째 칸으로 이동했습니다. 남은 턴: %d\n", choice-1, posId, getCurrentPlayer().getTurns());
+
+                        List<Token> tokensOnPos = getTokensAt(board.getPositions().get(posId));
+                        for (Token targetToken : tokensOnPos) {
+                            if (rules.canCapture(currentToken, targetToken)) {
+                                System.out.println("[말 잡기] 상대의 말을 잡을 수 있습니다. 0/1");
+                                choice = scanner.nextInt(); scanner.nextLine();
+                                if (choice == 1) {
+                                    targetToken.reset();
+                                }
+                            }
+                            if (rules.canStack(currentToken, targetToken)) {
+                                System.out.println("[말 업기] 말을 업을 수 있습니다. 0/1");
+                                choice = scanner.nextInt(); scanner.nextLine();
+                                if (choice == 1) {
+                                    currentToken.stackWith(targetToken);
+                                }
+                                else { getCurrentPlayer().addTurn(-1); }
+                            }
+                        }
+
+                    }
+                    else {
+                        System.out.println("이동할 수 없습니다.");
+                    }
+                }
+            }
+            int winner = checkPlayerWin();
+            if (winner > -1) {
+                System.out.println("[게임 종료]: " + players.get(winner).getName() + " 우승!");
+                endGame();
+            }
+            else {
+                nextTurn();
+            }
+        }
     }
 
     public void nextTurn() {
@@ -53,6 +135,22 @@ public class Game {
             players.get(currentPlayerId).addTurn(1);
             currentPlayerId = (currentPlayerId + 1) % players.size();
         }
+    }
+
+    public int checkPlayerWin() {
+        for (int i = 0; i < players.size(); i++) {
+            boolean allFinished = true;
+            for (Token token : players.get(i).getTokens()) {
+                if (!token.isFinished()) {
+                    allFinished = false;
+                    break;
+                }
+            }
+            if (allFinished) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void endGame() {
@@ -81,6 +179,7 @@ public class Game {
         for (int i = 0; i < probabilities.length; i++) {
             if (r < probabilities[i]) {
                 result = outcomes[i+1];
+                break;
             }
         }
 
@@ -89,11 +188,18 @@ public class Game {
             result = outcomes[0];
         }
 
+        if (result == 4 || result == 5) {
+            getCurrentPlayer().addTurn(1);
+        }
+
         return result;
     }
 
-    public int specifiedThrow(int tossResult) {
-        return tossResult;
+    public int specifiedThrow(int throwResult) {
+        if (throwResult == 4 || throwResult == 5) {
+            getCurrentPlayer().addTurn(1);
+        }
+        return throwResult;
     }
 
 
@@ -114,49 +220,42 @@ public class Game {
      * throwResult = randomThrow();
      * applyMoveTo(token, newPos, throwResult)
      */
-    public void applyMoveTo(Token token, Position newPos, int throwResult) {
-        List<Token> capturableTokens = getTokensAt(newPos);
-
-        if (rules.checkMove(token.getPosition(), newPos, throwResult)) {
-            token.moveTo(newPos);
+    public boolean applyMoveTo(Token token, Position dest, int throwResult) {
+        if (rules.checkMove(token.getPosition(), dest, throwResult)) {
+            token.moveTo(dest);
             token.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
 
             // handle finishing conditions
-            if (board.getGoalPosition().equals(newPos)) {
+            if (dest.isGoal()) {
                 token.setFinished(true);
-                handleTokenFinished(token);
             }
+            return true;
+        }
+        return false;
+    }
 
-            // handle capturing
-            if (!capturableTokens.isEmpty()) {
-                for (Token targetToken: capturableTokens) {
-                    if (rules.canCapture(token, targetToken)) {
-                        targetToken.reset();
-                        token.getOwner().addTurn(1); // 말을 잡았다면 현재 턴 수에서 +1
-                    }
+    public void handleStacking(Token token, Position position) {
+        // position에 token이 업을 수 있는 말이 있는지 확인
+        List<Token> stackableTokens = getTokensAt(position);
+        if (!stackableTokens.isEmpty()) {
+            for (Token targetToken: stackableTokens) {
+                if (rules.canStack(token, targetToken)) {
+                    token.stackWith(targetToken);
                 }
             }
         }
     }
 
-    public void handleStacking(Token tokenA, Token tokenB) {
-        if (rules.canStack(tokenA, tokenB)) {
-            tokenA.stackWith(tokenB);
-        }
-    }
-
-    public void handleCapturing(Token tokenA, Token tokenB) {
-        // tokenA captures tokenB
-        if (rules.canCapture(tokenA, tokenB)) {
-            tokenB.reset();
-        }
-    }
-
-    public void handleTokenFinished(Token token) {
-        if (token.isFinished()) {
-            Player owner = token.getOwner();
-            owner.removeToken(token);
-            // UI에서는 owner.tokens.length로 남은 말 개수 표시
+    public void handleCapturing(Token token, Position position) {
+        // position에 token이 잡을 수 있는 말이 있는지 확인
+        List<Token> capturableTokens = getTokensAt(position);
+        if (!capturableTokens.isEmpty()) {
+            for (Token targetToken: capturableTokens) {
+                if (rules.canCapture(token, targetToken)) {
+                    targetToken.reset();
+                    token.getOwner().addTurn(1); // 말을 잡았다면 현재 턴 수에서 +1
+                }
+            }
         }
     }
 
@@ -164,7 +263,7 @@ public class Game {
         List<Token> tokens = new ArrayList<>();
         for (Player player : players) {
             for (Token t : player.getTokens()) {
-                if (t.getPosition().equals(position) && !t.isFinished()) {
+                if (t.getId() != currentToken.getId() && t.getPosition() != null && t.getPosition().equals(position) && !t.isFinished()) {
                     tokens.add(t);
                 }
             }

@@ -51,9 +51,9 @@ public class GameController implements GameEventListener {
     @Override
     public void onMoveTokens(Token token, Position destination, int throwResult) { game.applyMoveTo(token, destination, throwResult); }
     @Override
-    public void onStackTokens(Token tokenA, Token tokenB) { game.handleStacking(tokenA, tokenB); }
+    public void onStackTokens(Token token, Position position) { game.handleStacking(token, position); }
     @Override
-    public void onConfirmCaptureTokens(Token tokenA, Token tokenB) { game.handleCapturing(tokenA, tokenB); }
+    public void onConfirmCaptureTokens(Token token, Position position) { game.handleCapturing(token, position); }
 
     /* 게임 흐름 로직
      * onExitYes(): 게임 종료 버튼 누르면 실행

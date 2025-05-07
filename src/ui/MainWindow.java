@@ -14,6 +14,7 @@ public class MainWindow extends JFrame implements UiInterface {
 
     private StartPanel startPanel;
     private BoardPanel boardPanel;
+    private TokenPanel tokenPanel;
     private ControlPanel controlPanel;
     private GameController controller;
 
@@ -62,12 +63,22 @@ public class MainWindow extends JFrame implements UiInterface {
     @Override
     public void showGameScreen(int playerCount, int tokenCount, String shapeType) {
         boardPanel = new BoardPanel(playerCount, tokenCount, shapeType);
+        tokenPanel = new TokenPanel(boardPanel);
         controlPanel = new ControlPanel(controller, boardPanel);
         PlayerInfoPanel infoPanel = new PlayerInfoPanel(playerCount, tokenCount);
 
+        JLayeredPane layered = new JLayeredPane();
+        layered.setPreferredSize(boardPanel.getPreferredSize());
+
+        boardPanel.setBounds(0, 0, 800, 400);
+        tokenPanel.setBounds(0, 0, 800, 400);
+
+        layered.add(boardPanel, JLayeredPane.DEFAULT_LAYER);
+        layered.add(tokenPanel, JLayeredPane.PALETTE_LAYER);
+
         JPanel gamePanel = new JPanel(new BorderLayout());
         gamePanel.add(infoPanel, BorderLayout.NORTH);
-        gamePanel.add(boardPanel, BorderLayout.CENTER);
+        gamePanel.add(layered, BorderLayout.CENTER);
         gamePanel.add(controlPanel, BorderLayout.SOUTH);
 
         setContentPane(gamePanel);
@@ -87,7 +98,7 @@ public class MainWindow extends JFrame implements UiInterface {
 
     @Override
     public void updatePosition(Token token) {
-        boardPanel.moveToken(token);
+        tokenPanel.repaint();
     }
 
     @Override

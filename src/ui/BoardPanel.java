@@ -174,11 +174,11 @@ public class BoardPanel extends JPanel {
         return Math.abs(p1.x - p2.x) < TOLERANCE && Math.abs(p1.y - p2.y) < TOLERANCE;
     }
 
-    private int toPixelX(double x, int cellSize, int offsetX) {
+    int toPixelX(double x, int cellSize, int offsetX) {
         return (int)(offsetX + x * cellSize);
     }
 
-    private int toPixelY(double y, int cellSize, int offsetY) {
+    int toPixelY(double y, int cellSize, int offsetY) {
         return (int)(offsetY + y * cellSize);
     }
 
@@ -372,6 +372,25 @@ public class BoardPanel extends JPanel {
             lines.add(new Point2D.Double[]{ raw.get(i2), raw.get(tip) });
         }
         return lines;
+    }
+
+    public int getCellSize() {
+        return Math.min(getHeight() - 2 * PADDING,
+            getWidth()  - 2 * PADDING) / (GRID - 1);
+    }
+
+    public int getOffsetX() {
+        int cellSize = getCellSize();
+        return (getWidth()  - cellSize * (GRID - 1)) / 2;
+    }
+
+    public int getOffsetY() {
+        int cellSize = getCellSize();
+        return (getHeight() - cellSize * (GRID - 1)) / 2;
+    }
+
+    public Point2D.Double getNodePosition(int idx) {
+        return nodeGridPositions.get(idx);
     }
 
     public void moveToken(Token token) {

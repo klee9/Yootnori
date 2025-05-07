@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.Objects;
 import javax.swing.*;
 
 import model.Token;
@@ -16,34 +17,37 @@ public class BoardPanel extends JPanel {
     private final int IMPORTANT_EXTRA = 6;
     private final int GRID = 6;
     private final int PADDING = 40;
-    private final double CENTER = (GRID - 1) / 2.0;
-    private final double TOLERANCE = 0.01;
-    private String shapeType;
+  private final String shapeType;
+    private JLabel yutImageLabel;
+    private Timer  yutTimer;
 
-    private List<Point2D.Double> nodeGridPositions;
-    private List<Point2D.Double[]> lineConnections;
-    private List<Integer> importantIndices = new ArrayList<>();
+    private final List<Point2D.Double> nodeGridPositions;
+    private final List<Point2D.Double[]> lineConnections;
+    private final List<Integer> importantIndices = new ArrayList<>();
 
     public BoardPanel(int playerCount, int tokenCount, String shapeType) {
-        this.shapeType = shapeType;
+      this.shapeType = shapeType;
         setPreferredSize(new Dimension(800, 800));
         setBackground(Color.WHITE);
 
         List<Point2D.Double> raw;
         List<Point2D.Double[]> rawLines;
 
-        if ("사각형".equals(shapeType)) {
-            raw = createSquareNodePositions();
-            rawLines = createSquareLineConnections();
-        } else if ("오각형".equals(shapeType)) {
-            raw = createPentagonNodePositions();
-            rawLines = createPentagonLineConnections(raw);
-        } else if ("육각형".equals(shapeType)) {
-            raw = createHexagonNodePositions();
-            rawLines = createHexagonLineConnections(raw);
-        } else {
-            throw new IllegalArgumentException("지원하지 않는 shapeType: " + shapeType);
+      switch (shapeType) {
+        case "사각형" -> {
+          raw = createSquareNodePositions();
+          rawLines = createSquareLineConnections();
         }
+        case "오각형" -> {
+          raw = createPentagonNodePositions();
+          rawLines = createPentagonLineConnections(raw);
+        }
+        case "육각형" -> {
+          raw = createHexagonNodePositions();
+          rawLines = createHexagonLineConnections(raw);
+        }
+        case null, default -> throw new IllegalArgumentException("지원하지 않는 shapeType: " + shapeType);
+      }
 
         int n = raw.size();
         int[] idToRaw = new int[n];
@@ -81,29 +85,44 @@ public class BoardPanel extends JPanel {
             case 빽도 -> "backdo.png";
         };
 
-        ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + fileName));
+        ImageIcon icon = new ImageIcon(
+            Objects.requireNonNull(getClass().getResource("/images/" + fileName)));
         Image scaled = icon.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
         ImageIcon resized = new ImageIcon(scaled);
 
-        JLabel imageLabel = new JLabel(resized);
+        if (yutImageLabel != null) {
+            remove(yutImageLabel);
+        }
+        yutImageLabel = new JLabel(resized);
 
-        // 중앙에 위치시키기
-        int panelWidth = getWidth();
-        int panelHeight = getHeight();
-        int imgWidth = resized.getIconWidth();
-        int imgHeight = resized.getIconHeight();
-        imageLabel.setBounds((panelWidth - imgWidth) / 2, (panelHeight - imgHeight) / 2, imgWidth, imgHeight);
+        // 중앙 위치 계산
+        int pw = getWidth(), ph = getHeight();
+        int iw = resized.getIconWidth(), ih = resized.getIconHeight();
+        yutImageLabel.setBounds((pw - iw)/2, (ph - ih)/2, iw, ih);
 
         setLayout(null);
-        add(imageLabel);
+        add(yutImageLabel);
+        revalidate();
         repaint();
 
-        Timer timer = new Timer(3000, e -> {
-            remove(imageLabel);
+        if (yutTimer != null && yutTimer.isRunning()) {
+            yutTimer.stop();
+        }
+        yutTimer = new Timer(3000, _ -> removeYutImage());
+        yutTimer.setRepeats(false);
+        yutTimer.start();
+    }
+
+    public void removeYutImage() {
+        if (yutTimer != null && yutTimer.isRunning()) {
+            yutTimer.stop();
+        }
+        if (yutImageLabel != null) {
+            remove(yutImageLabel);
+            yutImageLabel = null;
+            revalidate();
             repaint();
-        });
-        timer.setRepeats(false);
-        timer.start();
+        }
     }
 
     @Override
@@ -139,11 +158,11 @@ public class BoardPanel extends JPanel {
         int x = toPixelX(startPos.x, cellSize, offsetX);
         int y = toPixelY(startPos.y, cellSize, offsetY);
 
-        g2.setFont(new Font("\uB9D1\uC740 \uACE0\uB515", Font.BOLD, 12));
+        g2.setFont(new Font("맑은 고딕", Font.BOLD, 12));
         FontMetrics metrics = g2.getFontMetrics();
-        int textWidth = metrics.stringWidth("\uCD9C\uBC1C");
+        int textWidth = metrics.stringWidth("출발");
         int textHeight = metrics.getAscent();
-        g2.drawString("\uCD9C\uBC1C", x - textWidth / 2, y + textHeight / 2);
+        g2.drawString("출발", x - textWidth / 2, y + textHeight / 2);
     }
 
     private void drawLineEdgeToEdge(Graphics2D g2, Point2D.Double from, Point2D.Double to, int cellSize, int offsetX, int offsetY) {
@@ -171,7 +190,8 @@ public class BoardPanel extends JPanel {
     }
 
     private boolean isClose(Point2D.Double p1, Point2D.Double p2) {
-        return Math.abs(p1.x - p2.x) < TOLERANCE && Math.abs(p1.y - p2.y) < TOLERANCE;
+      double TOLERANCE = 0.01;
+      return Math.abs(p1.x - p2.x) < TOLERANCE && Math.abs(p1.y - p2.y) < TOLERANCE;
     }
 
     int toPixelX(double x, int cellSize, int offsetX) {
@@ -215,7 +235,8 @@ public class BoardPanel extends JPanel {
         }
 
         // 중심 노드 (정확히 GRID 중심)
-        nodes.add(new Point2D.Double(CENTER, CENTER));
+      double CENTER = (GRID - 1) / 2.0;
+      nodes.add(new Point2D.Double(CENTER, CENTER));
         importantIndices.add(nodes.size() - 1);
 
         return nodes;
@@ -364,10 +385,10 @@ public class BoardPanel extends JPanel {
         for (int i = 0; i < outer; i++) {
             lines.add(new Point2D.Double[]{ raw.get(i), raw.get((i + 1) % outer) });
         }
-        int center = outer, start = outer + 1;
+        int start = outer + 1;
         for (int i = 0; i < 6; i++) {
             int tip = i * 4, i1 = start + 2 * i, i2 = i1 + 1;
-            lines.add(new Point2D.Double[]{ raw.get(center), raw.get(i1) });
+            lines.add(new Point2D.Double[]{ raw.get(outer), raw.get(i1) });
             lines.add(new Point2D.Double[]{ raw.get(i1), raw.get(i2) });
             lines.add(new Point2D.Double[]{ raw.get(i2), raw.get(tip) });
         }

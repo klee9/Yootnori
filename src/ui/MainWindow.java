@@ -13,8 +13,7 @@ import java.awt.*;
 public class MainWindow extends JFrame implements UiInterface {
 
     private StartPanel startPanel;
-    private BoardPanel boardPanel;
-    private TokenPanel tokenPanel;
+  private TokenPanel tokenPanel;
     private ControlPanel controlPanel;
     private GameController controller;
 
@@ -28,7 +27,7 @@ public class MainWindow extends JFrame implements UiInterface {
     }
 
     private void showStartScreen() {
-        startPanel = new StartPanel(e -> {
+        startPanel = new StartPanel(_ -> {
             int players = promptPlayerCount();
             int tokens = promptTokenCount();
             String shape = promptBoardShapeSelection();
@@ -62,7 +61,7 @@ public class MainWindow extends JFrame implements UiInterface {
 
     @Override
     public void showGameScreen(int playerCount, int tokenCount, String shapeType) {
-        boardPanel = new BoardPanel(playerCount, tokenCount, shapeType);
+      BoardPanel boardPanel = new BoardPanel(playerCount, tokenCount, shapeType);
         tokenPanel = new TokenPanel(boardPanel);
         controlPanel = new ControlPanel(controller, boardPanel);
         PlayerInfoPanel infoPanel = new PlayerInfoPanel(playerCount, tokenCount);

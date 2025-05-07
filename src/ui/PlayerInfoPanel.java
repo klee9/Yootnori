@@ -4,15 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PlayerInfoPanel extends JPanel {
-    private JLabel[] playerLabels;
-    private final Color[] colors = {
-        new Color(100, 149, 237), // 파랑
-        new Color(240, 128, 128), // 빨강
-        new Color(255, 215, 0),   // 노랑
-        new Color(144, 238, 144)  // 연두
-    };
+    private final JLabel[] playerLabels;
 
-    public PlayerInfoPanel(int playerCount, int tokenCount) {
+  public PlayerInfoPanel(int playerCount, int tokenCount) {
         setLayout(new GridLayout(1, playerCount));
         setBackground(Color.WHITE);
 
@@ -20,7 +14,13 @@ public class PlayerInfoPanel extends JPanel {
         for (int i = 0; i < playerCount; i++) {
             JLabel label = new JLabel("Player " + (i + 1) + "<br>남은 말: " + tokenCount + "개");
             label.setOpaque(true);
-            label.setBackground(colors[i]);
+          Color[] colors = {
+              new Color(100, 149, 237), // 파랑
+              new Color(240, 128, 128), // 빨강
+              new Color(255, 215, 0),   // 노랑
+              new Color(144, 238, 144)  // 연두
+          };
+          label.setBackground(colors[i]);
             label.setForeground(Color.BLACK);
             label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             label.setHorizontalAlignment(SwingConstants.CENTER);

@@ -12,23 +12,10 @@ public class Board {
         this.positions = new ArrayList<>();
 
         // initialize board
-        getBoardNodes(shapeType);
+        initBoard(shapeType);
     }
 
-    // for debugging purposes
-    public List<Position> getPositions() {
-        return positions;
-    }
-
-    public Position getStartPosition() {
-        return positions.get(0); // assuming the first element is the starting position
-    }
-
-    public Position getGoalPosition() {
-        return positions.get(7 * shapeType); // assuming the last element is the goal
-    }
-
-    public void getBoardNodes(int shape) {
+    public void initBoard(int shape) {
         // add positions
         for (int i = 0; i < 7*shape + 1; i++) {
             positions.add(new Position(i, shape));
@@ -69,4 +56,9 @@ public class Board {
             b.addPrevPosition(a);
         }
     }
+
+    // for debugging purposes
+    public List<Position> getPositions() { return positions; }
+    public Position getStartPosition() { return positions.get(0); }
+    public Position getGoalPosition() { return positions.get(0); }
 }

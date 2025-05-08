@@ -78,6 +78,16 @@ public class TokenPanel extends JComponent {
     }
 
     public void updateTokenPosition(int tokenId, int positionId) {
+        int idx = (tokenId/10)*tokenCount + tokenId%playerCount;
+
+        if (positionId == -1) { // move to somehwere
+            SwingUtilities.invokeLater(() -> {
+                tokenPositions.set(idx, new Point2D.Double(50,400));
+                revalidate();
+                repaint();
+            });
+            return;
+        }
         int cellSize = board.getCellSize();
         int offsetX = board.getOffsetX();
         int offsetY = board.getOffsetY();
@@ -86,9 +96,14 @@ public class TokenPanel extends JComponent {
 
         int x = board.toPixelX(grid.x, cellSize, offsetX);
         int y = board.toPixelY(grid.y, cellSize, offsetY);
-        int idx = (tokenId/10)*tokenCount + tokenId%playerCount;
+
         System.out.println("[Controller] 인덱스: " + idx + " 아이디: " + tokenId);
         tokenPositions.set(idx, new Point2D.Double(x-diameter/2.0, y-diameter/2.0));
+
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
     }
 
     public int getClickedToken(MouseEvent e) {

@@ -3,6 +3,7 @@ package controller;
 import model.*;
 import ui.MainWindow;
 import ui.PlayerInfoPanel;
+import ui.TokenPanel;
 
 // Gets the user gestures from the UI and runs model's functions.
 // Works as a mediator between Game and UI
@@ -10,6 +11,7 @@ import ui.PlayerInfoPanel;
 public class GameController implements GameEventListener {
     private MainWindow mainWindow;
     private PlayerInfoPanel infoPanel;
+    private TokenPanel tokenPanel;
     private Game game;
 
     public GameController (MainWindow mainWindow, Game game) {
@@ -20,7 +22,23 @@ public class GameController implements GameEventListener {
             if ("currentTurn".equals(evt.getPropertyName())) {
                 int newTurn = (int) evt.getNewValue();
                 System.out.println("[Controller] Turn switched to " + newTurn);
-                infoPanel.updateCurrentPlayer(game.getCurrentPlayer().getPlayerId(), game.getCurrentPlayer().getRemainingTokens());
+                infoPanel.updateCurrentPlayer(game.getCurrentPlayer().getPlayerId(), game.getPrevPlayer().getRemainingTokens(), game.getCurrentPlayer().getRemainingTokens());
+            }
+        });
+
+        game.addPropertyChangeListener(evt -> {
+            if ("tokenFinished".equals(evt.getPropertyName())) {
+                int tokenId = (int) evt.getNewValue();
+                System.out.println("[Controller] " + tokenId + " 완료!");
+                tokenPanel.updateTokenPosition(tokenId, -1);
+            }
+        });
+
+        game.addPropertyChangeListener(evt -> {
+            if ("winner".equals(evt.getPropertyName())) {
+                Player winner = (Player) evt.getNewValue();
+                System.out.println("[Controller] " + winner.getName() + " 승리!");
+                mainWindow.showEndScreen(winner);
             }
         });
     }
@@ -83,6 +101,10 @@ public class GameController implements GameEventListener {
 
     public void setInfoPanel(PlayerInfoPanel infoPanel) {
         this.infoPanel = infoPanel;
+    }
+
+    public void setTokenPanel(TokenPanel tokenPanel) {
+        this.tokenPanel = tokenPanel;
     }
 
 

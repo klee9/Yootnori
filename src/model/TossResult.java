@@ -2,7 +2,6 @@ package model;
 
 public enum TossResult {
     BACKDO(-1),
-    STOP(0),
     DO(1),
     GAE(2),
     GEOL(3),

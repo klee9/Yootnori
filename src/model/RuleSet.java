@@ -20,10 +20,8 @@ public class RuleSet {
             for (Position p : nextPositions) {
                 Position q = p;
                 for (int i = 1; i < tossResult.getValue(); i++) {
+                    if (q.isGoal()) { return true; }
                     q = q.getNextPositions().getFirst();
-                    if (q.isGoal()) {
-                        return true;
-                    }
                 }
                 if (q.getId() == nextPos.getId()) {
                     return true;

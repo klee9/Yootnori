@@ -48,10 +48,10 @@ public class PlayerInfoPanel extends JPanel {
         );
     }
 
-    public void updateCurrentPlayer(int playerIndex, int remaining) {
+    public void updateCurrentPlayer(int playerIndex, int remainingPrev, int remainingNext) {
         System.out.println("[InfoPanel] Player " + (playerIndex + 1) + "의 정보가 최신화되었습니다.");
         playerLabels[(playerIndex-1+playerLabels.length) % playerLabels.length].setText(
-                "<html>Player " + ((playerIndex-1+playerLabels.length) % playerLabels.length + 1) + "<br>남은 말: " + remaining + "개</html>");
-        playerLabels[playerIndex].setText("<html><b>Player " + (playerIndex + 1) + "◀<br>남은 말: " + remaining + "개</b></html>");
+                "<html>Player " + ((playerIndex-1+playerLabels.length) % playerLabels.length + 1) + "<br>남은 말: " + remainingPrev + "개</html>");
+        playerLabels[playerIndex].setText("<html><b>Player " + (playerIndex + 1) + "◀<br>남은 말: " + remainingNext + "개</b></html>");
     }
 }

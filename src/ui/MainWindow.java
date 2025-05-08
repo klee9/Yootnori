@@ -28,6 +28,10 @@ public class MainWindow extends JFrame implements UiInterface {
         showStartScreen();
     }
 
+    private void restartGame() {
+        showStartScreen();
+    }
+
     private void showStartScreen() {
         startPanel = new StartPanel(_ -> {
             int players = promptPlayerCount();
@@ -69,6 +73,7 @@ public class MainWindow extends JFrame implements UiInterface {
         controlPanel = new ControlPanel(controller, boardPanel);
         infoPanel = new PlayerInfoPanel(playerCount, tokenCount);
         controller.setInfoPanel(infoPanel);
+        controller.setTokenPanel(tokenPanel);
 
         JLayeredPane layered = new JLayeredPane();
         layered.setPreferredSize(boardPanel.getPreferredSize());
@@ -106,7 +111,24 @@ public class MainWindow extends JFrame implements UiInterface {
 
     @Override
     public void showEndScreen(Player winner) {
-        JOptionPane.showMessageDialog(this, winner.getName() + "님이 승리하셨습니다!");
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                winner.getName() + "님이 승리하셨습니다!\n게임을 다시 시작하시겠습니까?",
+                "게임 종료",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new String[]{"다시 시작", "종료"},
+                "다시 시작"
+        );
+
+        if (choice == JOptionPane.YES_OPTION) {
+            controller.onConfirmRestart();
+            restartGame();
+        } else if (choice == JOptionPane.NO_OPTION) {
+            controller.onConfirmExit();
+            System.exit(0);
+        }
     }
 
     public PlayerInfoPanel getInfoPanel() {

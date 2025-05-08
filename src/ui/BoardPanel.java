@@ -108,11 +108,9 @@ public class BoardPanel extends JPanel {
                     }
                     if (moveResult) {
                         System.out.println("[BoardPanel] 말을 " + posId + "번째 칸으로 이동했습니다.");
-                        SwingUtilities.invokeLater(() -> {
-                            tokenPanel.updateTokenPosition(tokenPanel.getCurrentToken(), posId); // TokenPanel 위치 업데이트
-                            tokenPanel.repaint();
-                            setClickable(false);
-                        });
+                        tokenPanel.updateTokenPosition(tokenPanel.getCurrentToken(), posId); // TokenPanel 위치 업데이트
+                        tokenPanel.repaint();
+                        setClickable(false);
                     }
                 }
             }
@@ -127,7 +125,6 @@ public class BoardPanel extends JPanel {
             case YUT -> "yut.png";
             case MO -> "mo.png";
             case BACKDO -> "backdo.png";
-            case STOP -> "backdo.png";
         };
 
         ImageIcon icon = new ImageIcon(

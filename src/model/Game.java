@@ -50,6 +50,8 @@ public class Game {
             players.add(player);
         }
         this.playerCount = playerCount;
+        this.shapeType = shapeType;
+        this.tokenCount = tokenCount;
         this.currentPlayerId = 0;
         this.gameState = GameState.READY;
         this.rules = new RuleSet();
@@ -82,6 +84,7 @@ public class Game {
                 }
             }
             if (allFinished) {
+                pcs.firePropertyChange("winner", null, players.get(i));
                 return i;
             }
         }
@@ -94,11 +97,11 @@ public class Game {
         shapeType = "사각형";
         players.clear();
         currentPlayerId = 0;
+        currentTurn = 1;
         gameState = GameState.ENDED;
     }
 
     public void restartGame() {
-        endGame();
         startGame(playerCount, tokenCount, shapeType);
     }
 
@@ -112,6 +115,7 @@ public class Game {
 
     // 윷 관련 함수
     public TossResult randomThrow() {
+        System.out.println("[System] 남은 턴: " + getCurrentPlayer().getTurns());
         // 백도(6.25%; '도'일 때 25%의 확률), 도(25%), 개(37.5%), 걸(25%), 윷(6.25%), 모(6.25%)
         TossResult[] outcomes = {TossResult.BACKDO, TossResult.DO, TossResult.GAE, TossResult.GEOL, TossResult.YUT, TossResult.MO};
         double[] probabilities = {0.25, 0.625, 0.875, 0.9375, 1.0};
@@ -137,10 +141,15 @@ public class Game {
         }
         System.out.println("[System] 랜덤 던지기 결과: " + result);
 
-        if (result == TossResult.BACKDO && currentTurn == 1) {
-            getCurrentPlayer().addTurn(-1);
-            nextTurn();
-            return TossResult.STOP;
+        //  플레이어가 시작하지 않았는데 백도가 나오면 턴 스킵
+        if (result == TossResult.BACKDO) {
+            boolean allAtStart = getCurrentPlayer().getTokens().stream()
+                    .allMatch(token -> token.getPosition().isStart());
+            if (allAtStart) {
+                getCurrentPlayer().addTurn(-1);
+                nextTurn();
+                return TossResult.BACKDO;
+            }
         }
 
         currentTossResult = result;
@@ -148,6 +157,7 @@ public class Game {
     }
 
     public TossResult specifiedThrow(TossResult tossResult) {
+        System.out.println("[System] 남은 턴: " + getCurrentPlayer().getTurns());
         if (tossResult == TossResult.YUT || tossResult == TossResult.MO) {
             getCurrentPlayer().addTurn(1);
         }
@@ -160,7 +170,7 @@ public class Game {
             if (allAtStart) {
                 getCurrentPlayer().addTurn(-1);
                 nextTurn();
-                return TossResult.STOP;
+                return TossResult.BACKDO;
             }
         }
         currentTossResult = tossResult;
@@ -191,16 +201,21 @@ public class Game {
         if (rules.checkMove(currentToken.getPosition(), dest, currentTossResult)) {
             currentToken.moveTo(dest);
             currentToken.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
-            System.out.println();
+            System.out.println("dest: " + dest.getId());
             // handle finishing conditions
             if (dest.isGoal()) {
                 currentToken.setFinished(true);
+                pcs.firePropertyChange("tokenFinished", null, currentToken.getId());
+                nextTurn();
+                checkPlayerWin();
+                return true;
             }
-
-            List<Token> capturableTokens = getTokensAt(dest);
-            if (!capturableTokens.isEmpty()) { waitForCapture = true; }
-            if (!waitForCapture) { nextTurn(); }
-            return true;
+            else {
+                List<Token> capturableTokens = getTokensAt(dest);
+                if (!capturableTokens.isEmpty()) { waitForCapture = true; }
+                if (!waitForCapture) { nextTurn(); }
+                return true;
+            }
         }
         return false;
     }
@@ -252,98 +267,10 @@ public class Game {
 
     // getters
     public GameState getState() { return gameState; }
+    public Player getPrevPlayer() { return players.get((currentPlayerId-1+playerCount)%playerCount); }
     public Player getCurrentPlayer() { return players.get(currentPlayerId); }
     public Token getCurrentToken() { return currentToken; }
     public int getPlayerCount() { return players.size(); }
     public int getTokenCount() { return tokenCount; }
     public String getShapeType() { return shapeType; }
 }
-
-/*
-setState(GameState.RUNNING);
-        Scanner scanner = new Scanner(System.in);
-        while (gameState == GameState.RUNNING) {
-            // 게임 시작 및 차례 테스팅
-            while (getCurrentPlayer().getTurns() > 0) {
-                TossResult result = null;
-                int choice = 0;
-                String yutChoice;
-                boolean moveResult = false;
-
-                System.out.printf("[게임 상태 표시] 현재 플레이어: %s, 남은 턴: %d\n", getCurrentPlayer().getName(), getCurrentPlayer().getTurns());
-                System.out.println("[윷 던지기] t: 랜덤 윷 던지기, s: 지정 윷 던지기");
-
-                // 윷 던지기 테스팅
-                yutChoice = scanner.nextLine();
-                if (yutChoice.equals("t")) {
-                    result = randomThrow();
-                    System.out.printf("결과: %d\n", result.getValue());
-                }
-                else if (yutChoice.equals("s")) {
-                    System.out.println("[지정 윷 던지기] 결과 선택 -1 ~ 5");
-                    result = scanner.nextInt(); scanner.nextLine();
-                }
-
-                // 말 이동, 업기, 잡기 테스팅
-                System.out.println("[말 이동] 어느 말을 움직일까요?");
-                for (int i = 0; i < getCurrentPlayer().getTokens().size(); i++) {
-                    int posInfo = -1;
-                    if (getCurrentPlayer().getTokens().get(i).getPosition() != null) { posInfo = getCurrentPlayer().getTokens().get(i).getPosition().getId(); }
-                    System.out.printf("%d) %d (on %d, stacked: ", i+1, getCurrentPlayer().getTokens().get(i).getId(), posInfo);
-                    List<Token> stackedTokens = getCurrentPlayer().getTokens().get(i).getStackedTokens();
-                    if (!stackedTokens.isEmpty()) {
-                        for (Token token : stackedTokens) {
-                            System.out.printf("%d, ", token.getId());
-                        }
-                    }
-                    System.out.println(")");
-                }
-
-                choice = scanner.nextInt();scanner.nextLine();
-                currentToken = getCurrentPlayer().getTokens().get(choice-1);
-                if (currentToken.getPosition() == null)
-                    currentToken.moveTo(board.getPositions().get(0));
-
-
-                while (!moveResult) {
-                    System.out.println("[말 이동] 어디로 움직일까요?");
-                    int posId = scanner.nextInt(); scanner.nextLine();
-                    moveResult = applyMoveTo(currentToken, board.getPositions().get(posId), result);
-                    if (moveResult) {
-                        System.out.printf("[말 이동] %d번째 말이 %d번째 칸으로 이동했습니다. 남은 턴: %d\n", choice-1, posId, getCurrentPlayer().getTurns());
-
-                        List<Token> tokensOnPos = getTokensAt(board.getPositions().get(posId));
-                        for (Token targetToken : tokensOnPos) {
-                            if (rules.canCapture(currentToken, targetToken)) {
-                                System.out.println("[말 잡기] 상대의 말을 잡을 수 있습니다. 0/1");
-                                choice = scanner.nextInt(); scanner.nextLine();
-                                if (choice == 1) {
-                                    targetToken.reset();
-                                }
-                            }
-                            if (rules.canStack(currentToken, targetToken)) {
-                                System.out.println("[말 업기] 말을 업을 수 있습니다. 0/1");
-                                choice = scanner.nextInt(); scanner.nextLine();
-                                if (choice == 1) {
-                                    currentToken.stackWith(targetToken);
-                                }
-                                else { getCurrentPlayer().addTurn(-1); }
-                            }
-                        }
-
-                    }
-                    else {
-                        System.out.println("이동할 수 없습니다.");
-                    }
-                }
-            }
-            int winner = checkPlayerWin();
-            if (winner > -1) {
-                System.out.println("[게임 종료]: " + players.get(winner).getName() + " 우승!");
-                endGame();
-            }
-            else {
-                nextTurn();
-            }
-        }
- */

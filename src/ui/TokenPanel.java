@@ -13,6 +13,7 @@ import controller.GameController;
 
 public class TokenPanel extends JComponent {
     private final BoardPanel board;
+    private final ControlPanel control;
     private GameController controller;
     private final List<Integer> nodeIndices = new ArrayList<>();
     private final List<Integer> tokens = new ArrayList<>();
@@ -28,9 +29,10 @@ public class TokenPanel extends JComponent {
     private int tokenCount;
     private int clickedToken = -1;
 
-    public TokenPanel(BoardPanel board, StartPanel startPanel, GameController controller) {
+    public TokenPanel(BoardPanel board, ControlPanel control, StartPanel startPanel, GameController controller) {
         this.board = board;
-        this.controller = controller;
+      this.control = control;
+      this.controller = controller;
         this.playerCount = startPanel.getSelectedPlayerCount();
         this.tokenCount = startPanel.getSelectedTokenCount();
         setOpaque(false);
@@ -103,6 +105,13 @@ public class TokenPanel extends JComponent {
         SwingUtilities.invokeLater(() -> {
             revalidate();
             repaint();
+
+            // token 이동 끝난 후 던지기 버튼 다시 보여줌
+            if (control != null) {
+                control.showTossButtons();
+            }
+            else
+                System.out.println("컨트롤이 널입니다");
         });
     }
 

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="84e73576-e8af-4405-9c71-9f0708f39cfb" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/controller/GameController.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/controller/GameController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/model/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/model/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/ControlPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/ControlPanel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/MainWindow.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/MainWindow.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/ControlPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/ControlPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/MainWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/MainWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TokenPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TokenPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yootnori/yootnori.iml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2wXJDRuzX1U7LYQzcNn5qjhTi95" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;combined&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/csh34/Documents/Yootnori&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
+    &quot;애플리케이션.Main.executor&quot;: &quot;Run&quot;,
+    &quot;애플리케이션.MainWindow.executor&quot;: &quot;Run&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\csh34\Documents\Yootnori\src" />
+      <recent name="C:\Users\csh34\Documents\Yootnori\src\ui" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\csh34\Documents\Yootnori\src" />
+      <recent name="C:\Users\csh34\Documents\Yootnori\eclipse-workspace\yootnori1\src" />
+      <recent name="C:\Users\csh34\Documents\Yootnori\eclipse-workspace\yootnori1\images" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="Yootnori" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="애플리케이션.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.142" />
+        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.142" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="84e73576-e8af-4405-9c71-9f0708f39cfb" name="변경" comment="" />
+      <created>1746181864329</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746181864329</updated>
+      <workItem from="1746181865390" duration="435000" />
+      <workItem from="1746182313147" duration="147000" />
+      <workItem from="1746182486501" duration="647000" />
+      <workItem from="1746203269845" duration="2000" />
+      <workItem from="1746240793685" duration="5805000" />
+      <workItem from="1746280017595" duration="1000" />
+      <workItem from="1746286071057" duration="6879000" />
+      <workItem from="1746428984711" duration="6381000" />
+      <workItem from="1746448982763" duration="481000" />
+      <workItem from="1746483782742" duration="4685000" />
+      <workItem from="1746489001748" duration="707000" />
+      <workItem from="1746531397419" duration="2000" />
+      <workItem from="1746617935178" duration="317000" />
+      <workItem from="1746618801605" duration="4525000" />
+      <workItem from="1746631344079" duration="2647000" />
+      <workItem from="1746634061714" duration="872000" />
+      <workItem from="1746635037624" duration="2078000" />
+      <workItem from="1746709904114" duration="302000" />
+      <workItem from="1746710226158" duration="1754000" />
+      <workItem from="1746712007701" duration="2596000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

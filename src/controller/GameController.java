@@ -1,9 +1,12 @@
 package controller;
 
 import model.*;
+import ui.ControlPanel;
 import ui.MainWindow;
 import ui.PlayerInfoPanel;
 import ui.TokenPanel;
+
+import javax.swing.*;
 
 // Gets the user gestures from the UI and runs model's functions.
 // Works as a mediator between Game and UI
@@ -11,6 +14,7 @@ import ui.TokenPanel;
 public class GameController implements GameEventListener {
     private MainWindow mainWindow;
     private PlayerInfoPanel infoPanel;
+    private ControlPanel control;
     private TokenPanel tokenPanel;
     private Game game;
 
@@ -23,6 +27,11 @@ public class GameController implements GameEventListener {
                 int newTurn = (int) evt.getNewValue();
                 System.out.println("[Controller] Turn switched to " + newTurn);
                 infoPanel.updateCurrentPlayer(game.getCurrentPlayer().getPlayerId(), game.getPrevPlayer().getRemainingTokens(), game.getCurrentPlayer().getRemainingTokens());
+                Timer timer = new Timer(3000, e -> {
+                    control.showTossButtons();
+                });
+                timer.setRepeats(false);
+                timer.start();
             }
         });
 
@@ -99,13 +108,8 @@ public class GameController implements GameEventListener {
     @Override
     public void onConfirmRestart() { game.restartGame(); }
 
-    public void setInfoPanel(PlayerInfoPanel infoPanel) {
-        this.infoPanel = infoPanel;
-    }
-
-    public void setTokenPanel(TokenPanel tokenPanel) {
-        this.tokenPanel = tokenPanel;
-    }
-
+    public void setInfoPanel(PlayerInfoPanel infoPanel) { this.infoPanel = infoPanel; }
+    public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
+    public void setControlPanel(ControlPanel control) { this.control = control; }
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getPlayerId(); }
 }

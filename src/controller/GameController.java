@@ -107,5 +107,5 @@ public class GameController implements GameEventListener {
         this.tokenPanel = tokenPanel;
     }
 
-
+    public int getCurrentPlayerId() { return game.getCurrentPlayer().getPlayerId(); }
 }

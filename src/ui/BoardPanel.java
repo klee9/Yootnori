@@ -102,13 +102,19 @@ public class BoardPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (clickable) {
                     int posId = handleNodeClick(e);
-                    boolean moveResult = controller.onMoveTokens(controller.onClickPosition(posId)); // 윷 던지기 결과에 따라 토큰 움직이기
+                    int currentToken = tokenPanel.getCurrentToken();
+
+                    if (currentToken == -1) {
+                        System.out.println("[BoardPanel] 잘못된 토큰 선택. 현재 플레이어의 토큰이 아닙니다.");
+                        return;
+                    }
+
+                    boolean moveResult = controller.onMoveTokens(controller.onClickPosition(posId));
                     if (!moveResult) {
                         System.out.println("[BoardPanel] 해당 위치로 움직일 수 없습니다. 다시 시도하세요.");
-                    }
-                    if (moveResult) {
+                    } else {
                         System.out.println("[BoardPanel] 말을 " + posId + "번째 칸으로 이동했습니다.");
-                        tokenPanel.updateTokenPosition(tokenPanel.getCurrentToken(), posId); // TokenPanel 위치 업데이트
+                        tokenPanel.updateTokenPosition(currentToken, posId);
                         tokenPanel.repaint();
                         setClickable(false);
                     }

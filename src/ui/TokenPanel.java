@@ -51,7 +51,7 @@ public class TokenPanel extends JComponent {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int tokenId = getClickedToken(e);
-                if (tokenId != -1) {
+                if (tokenId != -1) { // 현재 플레이어가 아니면 실행되지 않도록 해야 함
                     controller.onClickToken(tokenId);
                 }
                 else {
@@ -78,7 +78,7 @@ public class TokenPanel extends JComponent {
     }
 
     public void updateTokenPosition(int tokenId, int positionId) {
-        int idx = (tokenId/10)*tokenCount + tokenId%playerCount;
+        int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
 
         if (positionId == -1) { // move to somehwere
             SwingUtilities.invokeLater(() -> {
@@ -111,9 +111,17 @@ public class TokenPanel extends JComponent {
         for (int i = 0; i < tokens.size(); i++) {
             Point2D token = tokenPositions.get(i);
             if (clickPoint.distance(token.getX(), token.getY()) < diameter) {
-                System.out.println("[TokenPanel] 토큰" + tokens.get(i) + " 선택됨");
-                clickedToken = tokens.get(i);
-                return tokens.get(i);
+                int tokenId = tokens.get(i);
+                int currentPlayerId = controller.getCurrentPlayerId();
+                int tokenOwner = tokenId / 10;
+                if (currentPlayerId != tokenOwner) {
+                    System.out.println("[TokenPanel] 현재 플레이어의 토큰이 아닙니다. 이동 불가.");
+                    return -1;
+                }
+                System.out.println("[TokenPanel] 토큰" + tokenId + " 선택됨");
+                board.setClickable(true);
+                clickedToken = tokenId;
+                return tokenId;
             }
         }
         return -1;

@@ -32,7 +32,6 @@ public class ControlPanel extends JPanel {
             TossResult result = controller.onRandomToss();
             board.showYutImage(result);
             showResultOnly(result);
-            board.setClickable(true);
         });
 
         fixedYutButton.addActionListener(e -> {
@@ -48,7 +47,6 @@ public class ControlPanel extends JPanel {
                 menu.add(item);
             }
             menu.show(fixedYutButton, 0, fixedYutButton.getHeight());
-            board.setClickable(true);
         });
 
         add(randomYutButton);

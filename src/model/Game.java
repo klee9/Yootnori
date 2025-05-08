@@ -184,11 +184,14 @@ public class Game {
         return positions.get(positionIndex);
     }
 
-    public Token selectToken(int tokenIndex) {
-        currentToken = players.get(currentPlayerId).getTokens().get(tokenIndex % 10);
-        if (currentPlayerId != tokenIndex/10) { return null; }
-        System.out.println("[System] 토큰" + currentToken.getId() + " 선택됨. 현재 위치: " + currentToken.getPosition().getId());
-        return currentToken;
+    public void selectToken(int tokenIndex) {
+        if (currentPlayerId != tokenIndex/10) {
+            currentToken = getCurrentPlayer().getTokens().getFirst();
+        }
+        else {
+            currentToken = players.get(currentPlayerId).getTokens().get(tokenIndex % 10);
+            System.out.println("[System] 토큰" + currentToken.getId() + " 선택됨. 현재 위치: " + currentToken.getPosition().getId());
+        }
     }
 
     /* 사용 예시

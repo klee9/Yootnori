@@ -33,7 +33,7 @@ public class MainWindow extends JFrame implements UiInterface {
     }
 
     private void showStartScreen() {
-        startPanel = new StartPanel(_ -> {
+        startPanel = new StartPanel(e -> {
             int players = promptPlayerCount();
             int tokens = promptTokenCount();
             String shape = promptBoardShapeSelection();

@@ -50,9 +50,9 @@ public class RuleSet {
         return tokenA.getId() != tokenB.getId() && tokenA.getOwner() == tokenB.getOwner() && tokenA.getPosition() == tokenB.getPosition();
     }
 
-    public boolean canCapture(Token tokenA, Token tokenB) {
-        boolean result = tokenA.getOwner() != tokenB.getOwner() && tokenA.getPosition() == tokenB.getPosition();
-        if (result) {
+    public boolean canCapture(Token tokenA, Token tokenB, TossResult tossResult) {
+        boolean result = tokenA.getOwner() != tokenB.getOwner() && tokenA.getPosition().getId() == tokenB.getPosition().getId() && tokenB.getPosition().getId() != 0;
+        if (result && tossResult.getValue() < 4) {
             tokenA.getOwner().addTurn(1);
         }
         return result;

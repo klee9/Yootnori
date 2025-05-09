@@ -7,6 +7,8 @@ import model.Player;
 import model.TossResult;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ControlPanel extends JPanel {
     private GameController controller;
@@ -15,6 +17,8 @@ public class ControlPanel extends JPanel {
     JButton randomYutButton = new JButton("랜덤 윷 던지기");
     JButton fixedYutButton = new JButton("지정 윷 던지기");
     private JLabel resultLabel;
+    private List<JLabel> resultLabels = new ArrayList<>();
+    private TossResult tossResult;
 
     public ControlPanel(GameController controller, BoardPanel board) {
         this.controller = controller;
@@ -26,9 +30,9 @@ public class ControlPanel extends JPanel {
         // 클릭 이벤트는 이후 연결 예정
         randomYutButton.addActionListener(e -> {
             System.out.println("랜덤 윷 던지기 클릭됨");
-            TossResult result = controller.onRandomToss();
-            board.showYutImage(result);
-            showResultOnly(resultTranslate(result));
+            tossResult = controller.onRandomToss();
+            board.showYutImage(tossResult);
+            showResultOnly(resultTranslate(tossResult));
         });
 
         fixedYutButton.addActionListener(e -> {
@@ -37,9 +41,9 @@ public class ControlPanel extends JPanel {
             for (TossResult res : TossResult.values()) {
                 JMenuItem item = new JMenuItem(res.name());
                 item.addActionListener(ev -> {
-                    TossResult result = controller.onSpecifiedToss(res);
-                    board.showYutImage(result);
-                    showResultOnly(resultTranslate(result));
+                    tossResult = controller.onSpecifiedToss(res);
+                    board.showYutImage(tossResult);
+                    showResultOnly(resultTranslate(tossResult));
                 });
                 menu.add(item);
             }
@@ -62,7 +66,9 @@ public class ControlPanel extends JPanel {
     public void showTossButtons() {
         randomYutButton.setVisible(true);
         fixedYutButton.setVisible(true);
-        remove(resultLabel);
+        for (JLabel label : resultLabels) {
+            remove(label);
+        }
         revalidate();
         repaint();
     }
@@ -79,9 +85,11 @@ public class ControlPanel extends JPanel {
     }
 
     private void showResultOnly(String result) {
-        // 버튼 숨기기
-        randomYutButton.setVisible(false);
-        fixedYutButton .setVisible(false);
+        // 윷, 모가 아니면 버튼 숨기기
+        if (tossResult != TossResult.YUT && tossResult != TossResult.MO) {
+            randomYutButton.setVisible(false);
+            fixedYutButton .setVisible(false);
+        }
 
         // 결과 라벨 생성 및 추가
         resultLabel = new JLabel(result);
@@ -92,19 +100,14 @@ public class ControlPanel extends JPanel {
         resultLabel.setPreferredSize(new Dimension(75, 50));
         resultLabel.setHorizontalAlignment(SwingConstants.CENTER); // 가로 중앙 정렬
         resultLabel.setVerticalAlignment(SwingConstants.CENTER);
+        resultLabels.add(resultLabel);
         add(resultLabel);
 
         revalidate();
         repaint();
     }
 
-    public void displayThrowResult(TossResult result) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void updateTurnLabel(Player player) {
-        // TODO Auto-generated method stub
-
-    }
+    public int getLabelsSize() { return resultLabels.size(); }
+    public void displayThrowResult(TossResult result) {}
+    public void updateTurnLabel(Player player) {}
 }

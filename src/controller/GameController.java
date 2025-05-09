@@ -7,6 +7,7 @@ import ui.PlayerInfoPanel;
 import ui.TokenPanel;
 
 import javax.swing.*;
+import java.util.List;
 
 // Gets the user gestures from the UI and runs model's functions.
 // Works as a mediator between Game and UI
@@ -23,10 +24,22 @@ public class GameController implements GameEventListener {
         this.game = game;
 
         game.addPropertyChangeListener(evt -> {
-            if ("currentTurn".equals(evt.getPropertyName())) {
-                int newTurn = (int) evt.getNewValue();
-                System.out.println("[Controller] Turn switched to " + newTurn);
+            if ("tokenFinished".equals(evt.getPropertyName())) {
+                int tokenId = (int) evt.getNewValue();
+                tokenPanel.updateTokenPosition(tokenId, -1);
+            }
+        });
+
+        game.addPropertyChangeListener(evt -> {
+            if ("nextTurn".equals(evt.getPropertyName())) {
                 infoPanel.updateCurrentPlayer(game.getCurrentPlayer().getPlayerId(), game.getPrevPlayer().getRemainingTokens(), game.getCurrentPlayer().getRemainingTokens());
+                control.showTossButtons();
+            }
+        });
+
+        game.addPropertyChangeListener(evt -> {
+            if ("cantMove".equals(evt.getPropertyName())) {
+                boolean cantMove = (boolean) evt.getNewValue();
                 Timer timer = new Timer(3000, e -> {
                     control.showTossButtons();
                 });
@@ -36,17 +49,17 @@ public class GameController implements GameEventListener {
         });
 
         game.addPropertyChangeListener(evt -> {
-            if ("tokenFinished".equals(evt.getPropertyName())) {
-                int tokenId = (int) evt.getNewValue();
-                System.out.println("[Controller] " + tokenId + " 완료!");
-                tokenPanel.updateTokenPosition(tokenId, -1);
+            if ("turnsLeft".equals(evt.getPropertyName())) {
+                int turnsLeft = (int) evt.getNewValue();
+                if (turnsLeft == 0) {
+                    control.showTossButtons();
+                }
             }
         });
 
         game.addPropertyChangeListener(evt -> {
             if ("winner".equals(evt.getPropertyName())) {
                 Player winner = (Player) evt.getNewValue();
-                System.out.println("[Controller] " + winner.getName() + " 승리!");
                 mainWindow.showEndScreen(winner);
             }
         });
@@ -87,7 +100,17 @@ public class GameController implements GameEventListener {
     @Override
     public void onClickToken(int tokenIndex) { game.selectToken(tokenIndex); }
     @Override
-    public boolean onMoveTokens(Position destination) { return game.applyMoveTo(destination); }
+    public boolean onMoveTokens(Position destination) {
+        boolean moveSuccess = game.applyMoveTo(destination);
+
+        if (moveSuccess) {
+            List<Token> captured = game.getCapturedTokens();
+            for (Token t : captured) {
+                tokenPanel.updateTokenPosition(t.getId(), t.getStartPosition());
+            }
+        }
+        return moveSuccess;
+    }
     @Override
     public void onStackTokens(Token token, Position position) { game.handleStacking(token, position); }
     @Override

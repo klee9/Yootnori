@@ -114,6 +114,7 @@ public class BoardPanel extends JPanel {
                         System.out.println("[BoardPanel] 해당 위치로 움직일 수 없습니다. 다시 시도하세요.");
                     } else {
                         System.out.println("[BoardPanel] 말을 " + posId + "번째 칸으로 이동했습니다.");
+                        tokenPanel.setFocusable(true);
                         tokenPanel.updateTokenPosition(currentToken, posId);
                         tokenPanel.repaint();
                         setClickable(false);
@@ -156,7 +157,7 @@ public class BoardPanel extends JPanel {
         if (yutTimer != null && yutTimer.isRunning()) {
             yutTimer.stop();
         }
-        yutTimer = new Timer(3000, _ -> removeYutImage());
+        yutTimer = new Timer(3000, e -> removeYutImage());
         yutTimer.setRepeats(false);
         yutTimer.start();
     }

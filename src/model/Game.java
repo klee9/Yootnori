@@ -11,15 +11,21 @@ public class Game {
     private int playerCount;
     private int tokenCount;
     private String shapeType;
-    private Token currentToken; // 디버깅 과정에서 사용됨. 나중에 처리
-    private List<Player> players;
     private Board board;
-    private int currentPlayerId;
     private GameState gameState;
     private RuleSet rules;
-    private int currentTurn;
-    private TossResult currentTossResult;
+
+    private Token currentToken;
     private boolean waitForCapture;
+    private List<Token> capturedTokens;
+
+    private List<Player> players;
+    private int currentPlayerId;
+
+    private int currentTurn;
+    private List<TossResult> YutResults = new ArrayList<>(); // TODO 여기 추가함
+    private TossResult currentMove = TossResult.BACKDO;      // TODO 여기 추가함
+
     private PropertyChangeSupport pcs;
 
     public Game() {
@@ -56,18 +62,20 @@ public class Game {
         this.gameState = GameState.READY;
         this.rules = new RuleSet(shapeType);
         this.currentTurn = 1;
-        this.currentToken = getCurrentPlayer().getTokens().getFirst();
+        this.currentToken = getCurrentPlayer().getTokens().get(0);
+        this.capturedTokens = new ArrayList<>();
     }
 
     public boolean nextTurn() {
         // 현재 플레이어가 턴을 모두 소진하면 다음 플레이어로 이동
+        System.out.println("Current player: " + currentPlayerId + " turn: " + getCurrentPlayer().getTurns());
         if (players.get(currentPlayerId).getTurns() <= 0) {
             players.get(currentPlayerId).addTurn(1);
             currentPlayerId = (currentPlayerId + 1) % players.size();
-            System.out.println("[System] 현재 플레이어: Player"+ (int)(currentPlayerId+1));
+            pcs.firePropertyChange("nextTurn", false, true);
             currentTurn++;
-            pcs.firePropertyChange("currentTurn", null, currentTurn);
-            currentToken = getCurrentPlayer().getTokens().getFirst();
+            YutResults.clear();
+            currentToken = getCurrentPlayer().getTokens().get(0);
             return true;
         }
         return false;
@@ -75,13 +83,7 @@ public class Game {
 
     public int checkPlayerWin() {
         for (int i = 0; i < players.size(); i++) {
-            boolean allFinished = true;
-            for (Token token : players.get(i).getTokens()) {
-                if (!token.isFinished()) {
-                    allFinished = false;
-                    break;
-                }
-            }
+            boolean allFinished = players.get(i).getTokens().stream().allMatch(Token::isFinished);
             if (allFinished) {
                 pcs.firePropertyChange("winner", null, players.get(i));
                 return i;
@@ -106,10 +108,6 @@ public class Game {
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(listener);
     }
 
     // 윷 관련 함수
@@ -138,20 +136,21 @@ public class Game {
         if (result == TossResult.YUT || result == TossResult.MO) {
             getCurrentPlayer().addTurn(1);
         }
+        YutResults.add(result);
         System.out.println("[System] 랜덤 던지기 결과: " + result);
 
         //  플레이어가 시작하지 않았는데 백도가 나오면 턴 스킵
         if (result == TossResult.BACKDO) {
             boolean allAtStart = getCurrentPlayer().getTokens().stream()
                     .allMatch(token -> token.getPosition().isStart());
-            if (allAtStart) {
+            boolean cantMove = YutResults.stream().allMatch(e -> e.equals(TossResult.BACKDO));
+            pcs.firePropertyChange("cantMove", null, cantMove&allAtStart);
+            if (allAtStart && cantMove) {
                 getCurrentPlayer().addTurn(-1);
                 nextTurn();
                 return TossResult.BACKDO;
             }
         }
-
-        currentTossResult = result;
         return result;
     }
 
@@ -166,13 +165,16 @@ public class Game {
         if (tossResult == TossResult.BACKDO) {
             boolean allAtStart = getCurrentPlayer().getTokens().stream()
                     .allMatch(token -> token.getPosition().isStart());
-            if (allAtStart) {
+            boolean cantMove = YutResults.stream().allMatch(e -> e.equals(TossResult.BACKDO));
+            pcs.firePropertyChange("cantMove", null, cantMove&allAtStart);
+            if (allAtStart && cantMove) {
                 getCurrentPlayer().addTurn(-1);
+                System.out.println("current player: " + getCurrentPlayer().getPlayerId() + ", turns: " + getCurrentPlayer().getTurns());
                 nextTurn();
                 return TossResult.BACKDO;
             }
         }
-        currentTossResult = tossResult;
+        YutResults.add(tossResult);
         return tossResult;
     }
 
@@ -185,7 +187,7 @@ public class Game {
 
     public void selectToken(int tokenIndex) {
         if (currentPlayerId != tokenIndex/10) {
-            currentToken = getCurrentPlayer().getTokens().getFirst();
+            currentToken = getCurrentPlayer().getTokens().get(0);
         }
         else {
             currentToken = players.get(currentPlayerId).getTokens().get(tokenIndex % 10);
@@ -194,23 +196,56 @@ public class Game {
     }
 
     public boolean applyMoveTo(Position dest) {
-        if (rules.checkMove(currentToken.getPosition(), dest, currentTossResult)) {
-            currentToken.moveTo(dest);
-            currentToken.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
-            System.out.println("dest: " + dest.getId());
-            // handle finishing conditions
-            if (dest.isGoal()) {
-                currentToken.setFinished(true);
-                pcs.firePropertyChange("tokenFinished", null, currentToken.getId());
-                nextTurn();
-                checkPlayerWin();
-                return true;
-            }
-            else {
-                List<Token> capturableTokens = getTokensAt(dest);
-                if (!capturableTokens.isEmpty()) { waitForCapture = true; }
-                if (!waitForCapture) { nextTurn(); }
-                return true;
+        for (TossResult result : YutResults) {
+            if (rules.checkMove(currentToken.getPosition(), dest, result)) {
+                // 도착 노드에 있는 말 찾기
+                List<Token> tokensOnDest = getTokensAt(dest);
+                currentMove = result;
+                capturedTokens.clear();
+
+                // 이동 전 원래 위치 저장 -> 임시로 이동한 것처럼 위치만 변경 (실제 이동은 나중에)
+                Position originalPosition = currentToken.getPosition();
+                currentToken.moveTo(dest);
+
+                // 1. 먼저 도착지의 토큰들에 대해 잡기/업기 조건 확인
+                for (Token t : tokensOnDest) {
+                    if (rules.canCapture(currentToken, t, result)) {
+                        t.reset();
+                        capturedTokens.add(t);
+                        System.out.println("[Game] 말을 잡았습니다.");
+                        if (currentMove.getValue() < 4) {
+                            pcs.firePropertyChange("turnsLeft", null, 0);
+                        }
+                    } else if (rules.canStack(currentToken, t)) {
+                        System.out.println("[Game] 업기 조건 충족됨 - 추후 stackWith 처리 예정");
+                        // 현재 업기 기능 보류 중이므로 처리 생략
+                    }
+                }
+
+                // 다시 원래 위치로 복원
+                currentToken.moveTo(originalPosition);
+
+                // 2. 그 후 현재 말 이동
+                currentToken.moveTo(dest);
+                currentToken.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
+
+                // 3. 도착 칸이 goal이면 종료 처리
+                if (dest.isGoal()) {
+                    currentToken.setFinished(true);
+                    pcs.firePropertyChange("tokenFinished", null, currentToken.getId());
+                    nextTurn();
+                    checkPlayerWin();
+                    YutResults.remove(result);
+                    return true;
+                }
+                else {
+                    YutResults.remove(result);
+                    pcs.firePropertyChange("movesLeft", null, YutResults.size());
+                    List<Token> tokensAfterMove = getTokensAt(dest);
+                    if (!tokensAfterMove.isEmpty()) { waitForCapture = true; }
+                    if (!waitForCapture) { nextTurn(); }
+                    return true;
+                }
             }
         }
         return false;
@@ -233,10 +268,9 @@ public class Game {
         List<Token> capturableTokens = getTokensAt(position);
         if (!capturableTokens.isEmpty()) {
             for (Token targetToken: capturableTokens) {
-                if (rules.canCapture(token, targetToken)) {
+                if (rules.canCapture(token, targetToken, currentMove)) {
                     targetToken.reset();
-                    token.getOwner().addTurn(1); // 말을 잡았다면 현재 턴 수에서 +1
-                    if (currentTossResult == TossResult.YUT || currentTossResult == TossResult.MO) {
+                    if (currentMove == TossResult.YUT || currentMove == TossResult.MO) {
                         token.getOwner().addTurn(-1);
                     }
                 }
@@ -269,4 +303,5 @@ public class Game {
     public int getPlayerCount() { return players.size(); }
     public int getTokenCount() { return tokenCount; }
     public String getShapeType() { return shapeType; }
+    public List<Token> getCapturedTokens() { return capturedTokens; }
 }

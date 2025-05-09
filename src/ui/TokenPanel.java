@@ -55,6 +55,7 @@ public class TokenPanel extends JComponent {
                 int tokenId = getClickedToken(e);
                 if (tokenId != -1) { // 현재 플레이어가 아니면 실행되지 않도록 해야 함
                     controller.onClickToken(tokenId);
+                    setFocusable(false);
                 }
                 else {
                     board.dispatchEvent(SwingUtilities.convertMouseEvent(TokenPanel.this, e, board));
@@ -106,12 +107,21 @@ public class TokenPanel extends JComponent {
             revalidate();
             repaint();
 
-            // token 이동 끝난 후 던지기 버튼 다시 보여줌
-            if (control != null) {
-                control.showTossButtons();
-            }
-            else
-                System.out.println("컨트롤이 널입니다");
+            // token 이동 끝난 후 던지기 버튼 다시 보여줌 -> YutResults가 empty이면 다시 보여줌
+//            if (control != null && control.getLabelsSize() == 1) {
+//                control.showTossButtons();
+//            }
+        });
+    }
+
+    // Overloading: 잡혔을 때 시작 위치로 토큰을 보낼 때만 사용
+    public void updateTokenPosition(int tokenId, Point2D.Double position) {
+        int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
+        tokenPositions.set(idx, position);
+
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
         });
     }
 

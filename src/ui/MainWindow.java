@@ -74,6 +74,7 @@ public class MainWindow extends JFrame implements UiInterface {
         infoPanel = new PlayerInfoPanel(playerCount, tokenCount);
         controller.setInfoPanel(infoPanel);
         controller.setTokenPanel(tokenPanel);
+        controller.setControlPanel(controlPanel);
 
         JLayeredPane layered = new JLayeredPane();
         layered.setPreferredSize(boardPanel.getPreferredSize());

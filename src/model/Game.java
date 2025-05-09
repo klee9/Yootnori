@@ -54,20 +54,19 @@ public class Game {
         this.tokenCount = tokenCount;
         this.currentPlayerId = 0;
         this.gameState = GameState.READY;
-        this.rules = new RuleSet();
+        this.rules = new RuleSet(shapeType);
         this.currentTurn = 1;
         this.currentToken = getCurrentPlayer().getTokens().getFirst();
     }
 
     public boolean nextTurn() {
-        int prevTurn = currentTurn;
         // 현재 플레이어가 턴을 모두 소진하면 다음 플레이어로 이동
-        if (players.get(currentPlayerId).getTurns() == 0) {
+        if (players.get(currentPlayerId).getTurns() <= 0) {
             players.get(currentPlayerId).addTurn(1);
             currentPlayerId = (currentPlayerId + 1) % players.size();
             System.out.println("[System] 현재 플레이어: Player"+ (int)(currentPlayerId+1));
             currentTurn++;
-            pcs.firePropertyChange("currentTurn", prevTurn, currentTurn);
+            pcs.firePropertyChange("currentTurn", null, currentTurn);
             currentToken = getCurrentPlayer().getTokens().getFirst();
             return true;
         }
@@ -194,12 +193,6 @@ public class Game {
         }
     }
 
-    /* 사용 예시
-     * token = selectToken(tokenIndex);
-     * newPos = selectPosition(positionIndex);
-     * throwResult = randomThrow();
-     * applyMoveTo(token, newPos, throwResult)
-     */
     public boolean applyMoveTo(Position dest) {
         if (rules.checkMove(currentToken.getPosition(), dest, currentTossResult)) {
             currentToken.moveTo(dest);

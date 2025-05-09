@@ -31,8 +31,8 @@ public class TokenPanel extends JComponent {
 
     public TokenPanel(BoardPanel board, ControlPanel control, StartPanel startPanel, GameController controller) {
         this.board = board;
-      this.control = control;
-      this.controller = controller;
+        this.control = control;
+        this.controller = controller;
         this.playerCount = startPanel.getSelectedPlayerCount();
         this.tokenCount = startPanel.getSelectedTokenCount();
         setOpaque(false);

@@ -7,9 +7,6 @@ import model.Player;
 import model.TossResult;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ControlPanel extends JPanel {
     private GameController controller;
@@ -71,14 +68,14 @@ public class ControlPanel extends JPanel {
     }
 
     private String resultTranslate(TossResult res) {
-      return switch (res) {
-        case DO -> "도";
-        case GAE -> "개";
-        case GEOL -> "걸";
-        case YUT -> "윷";
-        case MO -> "모";
-        case BACKDO -> "빽도";
-      };
+        return switch (res) {
+            case DO -> "도";
+            case GAE -> "개";
+            case GEOL -> "걸";
+            case YUT -> "윷";
+            case MO -> "모";
+            case BACKDO -> "빽도";
+        };
     }
 
     private void showResultOnly(String result) {

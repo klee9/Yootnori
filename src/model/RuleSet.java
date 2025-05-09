@@ -3,25 +3,37 @@ package model;
 import java.util.List;
 
 public class RuleSet {
+    int shapeType;
+    public RuleSet(String shapeType) {
+        switch (shapeType) {
+            case "사각형" -> this.shapeType = 4;
+            case "오각형" -> this.shapeType = 5;
+            case "육각형" -> this.shapeType = 6;
+            default -> this.shapeType = 1;
+        }
+    }
+
     public boolean checkMove(Position currPos, Position nextPos, TossResult tossResult) {
-        System.out.println("[RuleSet] " + currPos.getId() + "에서 " + nextPos.getId() + "로 이동 가능 여부 확인 중...");
-        // 백도
         if (tossResult == TossResult.BACKDO) {
             return currPos.getPrevPositions().contains(nextPos);
         }
-
-        // 도개걸윷모
         else {
-            List<Position> nextPositions = currPos.getNextPositions(); // for square boards
-            if (currPos.isCenter() && currPos.getId()/7 != 4) {        // for non-square boards
-                nextPositions = currPos.getNextPositions().subList(0, 1);
+            List<Position> nextPositions = currPos.getNextPositions();
+            if ((shapeType == 4 && currPos.getId() == 28) || (currPos.getId()%5 == 0)) {
+                nextPositions = currPos.getNextPositions();
+            }
+            else if (currPos.getId() == 7*shapeType) {
+                nextPositions = List.of(nextPositions.get(1));
+            }
+            else {
+                nextPositions = List.of(nextPositions.get(0));
             }
 
             for (Position p : nextPositions) {
                 Position q = p;
                 for (int i = 1; i < tossResult.getValue(); i++) {
                     if (q.isGoal()) { return true; }
-                    q = q.getNextPositions().getFirst();
+                    q = q.getNextPositions().get(0);
                 }
                 if (q.getId() == nextPos.getId()) {
                     return true;

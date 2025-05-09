@@ -63,6 +63,16 @@ public class GameController implements GameEventListener {
                 mainWindow.showEndScreen(winner);
             }
         });
+
+        game.addPropertyChangeListener(evt -> {
+            if ("tokenMoved".equals(evt.getPropertyName())) {
+                int tokenId = (int) evt.getNewValue();
+                Token t = findTokenById(tokenId);
+                Position p = t.getPosition();
+                int nodeIdx = p == null ? -1 : p.getId();
+                tokenPanel.updateTokenPosition(tokenId, nodeIdx);
+            }
+        });
     }
 
     /* 게임 시작 로직
@@ -135,4 +145,12 @@ public class GameController implements GameEventListener {
     public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
     public void setControlPanel(ControlPanel control) { this.control = control; }
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getPlayerId(); }
+    public Token findTokenById(int id) {
+        for (Player player : game.getPlayers()) {
+            for (Token t : player.getTokens()) {
+                if (t.getId() == id) return t;
+            }
+        }
+        return null;
+    }
 }

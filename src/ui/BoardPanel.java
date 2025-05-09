@@ -243,6 +243,17 @@ public class BoardPanel extends JPanel {
         return Math.abs(p1.x - p2.x) < TOLERANCE && Math.abs(p1.y - p2.y) < TOLERANCE;
     }
 
+    public int getNodeIndexAt(Point2D.Double clickPoint) {
+        for (int i = 0; i < actualNodePositions.size(); i++) {
+            Point2D.Double node = actualNodePositions.get(i);
+            if (clickPoint.distance(node) < NODE_SIZE) {
+                return i;
+            }
+        }
+        // 보드 밖이면 출발 지점(=노드 0)으로 간주
+        return 0;
+    }
+
     int toPixelX(double x, int cellSize, int offsetX) {
         return (int)(offsetX + x * cellSize);
     }

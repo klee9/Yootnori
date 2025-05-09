@@ -217,8 +217,13 @@ public class Game {
                             pcs.firePropertyChange("turnsLeft", null, 0);
                         }
                     } else if (rules.canStack(currentToken, t)) {
-                        System.out.println("[Game] 업기 조건 충족됨 - 추후 stackWith 처리 예정");
-                        // 현재 업기 기능 보류 중이므로 처리 생략
+                        System.out.println("[Game] 업기 조건 충족됨 - 스태킹 처리");
+                        handleStacking(currentToken, dest);
+                        currentToken.getOwner().addTurn(-1);
+                        YutResults.remove(result);
+                        pcs.firePropertyChange("movesLeft", null, YutResults.size());
+                        nextTurn();
+                        return true;
                     }
                 }
 
@@ -251,17 +256,35 @@ public class Game {
         return false;
     }
 
-    public void handleStacking(Token token, Position position) {
-        // position에 token이 업을 수 있는 말이 있는지 확인
-        List<Token> stackableTokens = getTokensAt(position);
-        if (!stackableTokens.isEmpty()) {
-            for (Token targetToken: stackableTokens) {
-                if (rules.canStack(token, targetToken)) {
-                    token.stackWith(targetToken);
-                }
+    public void handleStacking(Token carrier, Position position) {
+        // 업을 수 있는 토큰들끼리 묶기
+        List<Token> stackable = getTokensAt(position);
+        for (Token other : stackable) {
+            if (rules.canStack(carrier, other)) {
+                carrier.stackWith(other);
             }
         }
+
+        // carrier + stackedTokens 전부 새 위치로 이동
+        carrier.moveTo(position);
+
+        // UI 갱신용 이벤트 - carrier 자신과 업힌 토큰들
+        pcs.firePropertyChange("tokenMoved", null, carrier.getId());
+        for (Token t : carrier.getStackedTokens()) {
+            pcs.firePropertyChange("tokenMoved", null, t.getId());
+        }
+
+        // 스태킹도 움직임이므로 턴 소모
+        carrier.getOwner().addTurn(-1);
+
+        // 남은 윷 결과 갱신 (현재 이동에 해당하는 결과 제거)
+        YutResults.remove(currentMove);
+        pcs.firePropertyChange("movesLeft", null, YutResults.size());
+
+        // 다음 턴으로 전환
+        nextTurn();
     }
+
 
     public void handleCapturing(Token token, Position position) {
         // position에 token이 잡을 수 있는 말이 있는지 확인
@@ -304,4 +327,5 @@ public class Game {
     public int getTokenCount() { return tokenCount; }
     public String getShapeType() { return shapeType; }
     public List<Token> getCapturedTokens() { return capturedTokens; }
+    public List<Player> getPlayers() { return players; }
 }

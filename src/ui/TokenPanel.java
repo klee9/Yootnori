@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.geom.Point2D.Double;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controller.GameController;
+import model.Position;
+import model.Token;
 
 public class TokenPanel extends JComponent {
     private final BoardPanel board;
@@ -20,14 +23,17 @@ public class TokenPanel extends JComponent {
     private final List<Point2D> tokenPositions = new ArrayList<>();
     private final int diameter = 24;
     private final Color[] colors = {
-            new Color(100, 149, 237), // 파랑
-            new Color(240, 128, 128), // 빨강
-            new Color(255, 215, 0),   // 노랑
-            new Color(144, 238, 144)  // 연두
+        new Color(100, 149, 237), // 파랑
+        new Color(240, 128, 128), // 빨강
+        new Color(255, 215, 0),   // 노랑
+        new Color(144, 238, 144)  // 연두
     };
     private int playerCount;
     private int tokenCount;
     private int clickedToken = -1;
+
+    private Integer pendingCarrier = null;
+    private Integer baseToken = null;
 
     public TokenPanel(BoardPanel board, ControlPanel control, StartPanel startPanel, GameController controller) {
         this.board = board;
@@ -53,13 +59,49 @@ public class TokenPanel extends JComponent {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int tokenId = getClickedToken(e);
-                if (tokenId != -1) { // 현재 플레이어가 아니면 실행되지 않도록 해야 함
-                    controller.onClickToken(tokenId);
-                    setFocusable(false);
+
+                // 토큰 아닌 곳 클릭 → 예약 취소하고 보드에 이벤트 넘김
+                if (tokenId == -1) {
+                    pendingCarrier = null;
+                    board.dispatchEvent(
+                        SwingUtilities.convertMouseEvent(TokenPanel.this, e, board)
+                    );
+                    return;
                 }
-                else {
-                    board.dispatchEvent(SwingUtilities.convertMouseEvent(TokenPanel.this, e, board));
+
+                // 첫 번째 클릭 → 캐리어 토큰 예약
+                if (pendingCarrier == null) {
+                    pendingCarrier = tokenId;
+                    System.out.println("[TokenPanel] 캐리어 예약: 토큰 " + pendingCarrier);
+                    return;
                 }
+
+                // 두 번째 클릭 → 베이스 토큰으로 stacking
+                int baseId = tokenId;
+                if (baseId == pendingCarrier) {
+                    System.out.println("[TokenPanel] 동일 토큰 선택, 스태킹 취소");
+                    pendingCarrier = null;
+                    return;
+                }
+
+                // 보드 밖 토큰은 베이스 토큰으로 사용할 수 없음
+                int baseNodeIndex = board.getNodeIndexAt(
+                    (Point2D.Double) tokenPositions.get(tokens.indexOf(baseId))
+                );
+                if (baseNodeIndex == 0) {
+                    System.out.println("[TokenPanel] 노드 밖 토큰은 베이스로 선택할 수 없습니다: 토큰 " + baseId);
+                    return;
+                }
+
+                Token carrier = controller.findTokenById(pendingCarrier);
+                Position basePos = controller.findTokenById(baseId).getPosition();
+                controller.onStackTokens(carrier, basePos);
+                System.out.println("[TokenPanel] 토큰 " + pendingCarrier +
+                    "을(를) 토큰 " + baseId + " 위에 업음");
+
+                pendingCarrier = null;
+                board.setClickable(false);
+                control.showTossButtons();
             }
         });
     }
@@ -77,7 +119,33 @@ public class TokenPanel extends JComponent {
                 g2.fillOval(x, y, 24, 24);
             }
         }
+        g2.setColor(Color.BLACK);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        FontMetrics fm = g2.getFontMetrics();
 
+        for (int i = 0; i < playerCount; i++) {
+            for (int j = 0; j < tokenCount; j++) {
+                int idx = i * tokenCount + j;
+                Point2D pi = tokenPositions.get(idx);
+
+                int overlap = 0;
+                for (int jj = 0; jj < tokenCount; jj++) {
+                    if (jj == j) continue;
+                    int otherIdx = i * tokenCount + jj;
+                    Point2D pj = tokenPositions.get(otherIdx);
+                    if (pi.distance(pj) < 1e-3) {
+                        overlap++;
+                    }
+                }
+
+                if (overlap > 0) {
+                    String label = "+" + overlap;
+                    int tx = (int) pi.getX() + diameter / 2 + 2;
+                    int ty = (int) pi.getY() - diameter / 2 + fm.getAscent();
+                    g2.drawString(label, tx, ty);
+                }
+            }
+        }
     }
 
     public void updateTokenPosition(int tokenId, int positionId) {

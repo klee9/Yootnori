@@ -5,25 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84e73576-e8af-4405-9c71-9f0708f39cfb" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/src/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/controller/GameController.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/controller/GameController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/model/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/model/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/model/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/model/Player.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/model/RuleSet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/model/RuleSet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/model/Token.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/model/Token.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/ControlPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/ControlPanel$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/ControlPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/ControlPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/MainWindow.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/MainWindow.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/ControlPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/ControlPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yootnori.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Yootnori.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/GameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/BoardPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/BoardPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TokenPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TokenPanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,25 +40,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "combined2",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/csh34/Documents/Yootnori",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "모듈",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "vue.rearranger.settings.migration": "true",
-    "애플리케이션.Main.executor": "Run",
-    "애플리케이션.MainWindow.executor": "Run"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;combined2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/csh34/Documents/Yootnori&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
+    &quot;애플리케이션.Main.executor&quot;: &quot;Run&quot;,
+    &quot;애플리케이션.MainWindow.executor&quot;: &quot;Run&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\csh34\Documents\Yootnori\src" />

@@ -17,7 +17,7 @@ public class Player {
         this.playerId = playerId;
         this.tokens = new ArrayList<>();
 
-        double startX = 750;
+        double startX = 650;
         double startY = 250;
         int diameter = 24;
 

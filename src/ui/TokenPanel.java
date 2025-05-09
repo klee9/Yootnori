@@ -140,7 +140,7 @@ public class TokenPanel extends JComponent {
 
                 if (overlap > 0) {
                     String label = "+" + overlap;
-                    int tx = (int) pi.getX() + diameter / 2 + 2;
+                    int tx = (int) pi.getX() + diameter / 2 + 10;
                     int ty = (int) pi.getY() - diameter / 2 + fm.getAscent();
                     g2.drawString(label, tx, ty);
                 }

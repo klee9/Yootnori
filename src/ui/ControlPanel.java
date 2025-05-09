@@ -31,7 +31,7 @@ public class ControlPanel extends JPanel {
             System.out.println("랜덤 윷 던지기 클릭됨");
             TossResult result = controller.onRandomToss();
             board.showYutImage(result);
-            showResultOnly(result);
+            showResultOnly(resultTranslate(result));
         });
 
         fixedYutButton.addActionListener(e -> {
@@ -42,7 +42,7 @@ public class ControlPanel extends JPanel {
                 item.addActionListener(ev -> {
                     TossResult result = controller.onSpecifiedToss(res);
                     board.showYutImage(result);
-                    showResultOnly(result);
+                    showResultOnly(resultTranslate(result));
                 });
                 menu.add(item);
             }
@@ -53,13 +53,41 @@ public class ControlPanel extends JPanel {
         add(fixedYutButton);
     }
 
-    private void showResultOnly(TossResult result) {
-        // 버튼 제거
-        remove(randomYutButton);
-        remove(fixedYutButton);
+    // 던지기 버튼 모두 숨기는 메소드
+    private void hideTossButtons() {
+        randomYutButton.setVisible(false);
+        fixedYutButton.setVisible(false);
+        revalidate();
+        repaint();
+    }
+
+    // 던지기 버튼 모두 보이게 하는 메소드
+    public void showTossButtons() {
+        randomYutButton.setVisible(true);
+        fixedYutButton.setVisible(true);
+        remove(resultLabel);
+        revalidate();
+        repaint();
+    }
+
+    private String resultTranslate(TossResult res) {
+      return switch (res) {
+        case DO -> "도";
+        case GAE -> "개";
+        case GEOL -> "걸";
+        case YUT -> "윷";
+        case MO -> "모";
+        case BACKDO -> "빽도";
+      };
+    }
+
+    private void showResultOnly(String result) {
+        // 버튼 숨기기
+        randomYutButton.setVisible(false);
+        fixedYutButton .setVisible(false);
 
         // 결과 라벨 생성 및 추가
-        resultLabel = new JLabel(result.toString());
+        resultLabel = new JLabel(result);
         resultLabel.setFont(new Font("맑은 고딕", Font.BOLD, 24));
         resultLabel.setOpaque(true);
         resultLabel.setBackground(new Color(255, 240, 200));
@@ -71,17 +99,6 @@ public class ControlPanel extends JPanel {
 
         revalidate();
         repaint();
-
-        // 3초 후 다시 버튼 보이기
-        Timer timer = new Timer(3000, e -> {
-            remove(resultLabel);
-            add(randomYutButton);
-            add(fixedYutButton);
-            revalidate();
-            repaint();
-        });
-        timer.setRepeats(false);
-        timer.start();
     }
 
     public void displayThrowResult(TossResult result) {

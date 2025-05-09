@@ -21,7 +21,7 @@ public class RuleSet {
                 Position q = p;
                 for (int i = 1; i < tossResult.getValue(); i++) {
                     if (q.isGoal()) { return true; }
-                    q = q.getNextPositions().getFirst();
+                    q = q.getNextPositions().get(0);
                 }
                 if (q.getId() == nextPos.getId()) {
                     return true;
@@ -39,7 +39,7 @@ public class RuleSet {
     }
 
     public boolean canCapture(Token tokenA, Token tokenB) {
-        boolean result = tokenA.getOwner() != tokenB.getOwner() && tokenA.getPosition() == tokenB.getPosition();
+        boolean result = tokenA.getOwner() != tokenB.getOwner() && tokenA.getPosition().getId() == tokenB.getPosition().getId();
         if (result) {
             tokenA.getOwner().addTurn(1);
         }

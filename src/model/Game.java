@@ -21,6 +21,7 @@ public class Game {
     private TossResult currentTossResult;
     private boolean waitForCapture;
     private PropertyChangeSupport pcs;
+    private List<Token> capturedTokens = new ArrayList<>(); // 잡힌 말들을 임시로 저장
 
     public Game() {
         pcs = new PropertyChangeSupport(this);
@@ -56,7 +57,7 @@ public class Game {
         this.gameState = GameState.READY;
         this.rules = new RuleSet();
         this.currentTurn = 1;
-        this.currentToken = getCurrentPlayer().getTokens().getFirst();
+        this.currentToken = getCurrentPlayer().getTokens().get(0);
     }
 
     public boolean nextTurn() {
@@ -68,7 +69,7 @@ public class Game {
             System.out.println("[System] 현재 플레이어: Player"+ (int)(currentPlayerId+1));
             currentTurn++;
             pcs.firePropertyChange("currentTurn", prevTurn, currentTurn);
-            currentToken = getCurrentPlayer().getTokens().getFirst();
+            currentToken = getCurrentPlayer().getTokens().get(0);
             return true;
         }
         return false;
@@ -186,7 +187,7 @@ public class Game {
 
     public void selectToken(int tokenIndex) {
         if (currentPlayerId != tokenIndex/10) {
-            currentToken = getCurrentPlayer().getTokens().getFirst();
+            currentToken = getCurrentPlayer().getTokens().get(0);
         }
         else {
             currentToken = players.get(currentPlayerId).getTokens().get(tokenIndex % 10);
@@ -200,28 +201,84 @@ public class Game {
      * throwResult = randomThrow();
      * applyMoveTo(token, newPos, throwResult)
      */
+//    public boolean applyMoveTo(Position dest) {
+//        if (rules.checkMove(currentToken.getPosition(), dest, currentTossResult)) {
+//            currentToken.moveTo(dest);
+//            currentToken.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
+//            System.out.println("dest: " + dest.getId());
+//            // handle finishing conditions
+//            if (dest.isGoal()) {
+//                currentToken.setFinished(true);
+//                pcs.firePropertyChange("tokenFinished", null, currentToken.getId());
+//                nextTurn();
+//                checkPlayerWin();
+//                return true;
+//            }
+//            else {
+//                List<Token> capturableTokens = getTokensAt(dest);
+//                if (!capturableTokens.isEmpty()) { waitForCapture = true; }
+//                if (!waitForCapture) { nextTurn(); }
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+    
     public boolean applyMoveTo(Position dest) {
-        if (rules.checkMove(currentToken.getPosition(), dest, currentTossResult)) {
-            currentToken.moveTo(dest);
-            currentToken.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
-            System.out.println("dest: " + dest.getId());
-            // handle finishing conditions
-            if (dest.isGoal()) {
-                currentToken.setFinished(true);
-                pcs.firePropertyChange("tokenFinished", null, currentToken.getId());
-                nextTurn();
-                checkPlayerWin();
-                return true;
-            }
-            else {
-                List<Token> capturableTokens = getTokensAt(dest);
-                if (!capturableTokens.isEmpty()) { waitForCapture = true; }
-                if (!waitForCapture) { nextTurn(); }
-                return true;
+        if (!rules.checkMove(currentToken.getPosition(), dest, currentTossResult)) {
+            return false;
+        }
+
+        List<Token> tokensOnDest = getTokensAt(dest);
+        capturedTokens.clear(); // 매 이동마다 초기화
+
+        // 이동 전 원래 위치 저장
+        Position originalPosition = currentToken.getPosition();
+        currentToken.moveTo(dest); // 임시로 이동한 것처럼 위치 변경
+
+        // 1. 먼저 도착지의 토큰들에 대해 잡기/업기 조건 확인
+        for (Token t : tokensOnDest) {
+            if (rules.canCapture(currentToken, t)) {
+                t.reset();                        // 잡기 처리
+                capturedTokens.add(t);           // Controller에서 UI 갱신용
+            } else if (rules.canStack(currentToken, t)) {
+                System.out.println("[Game] 업기 조건 충족됨 - 추후 stackWith 처리 예정.");
+                // 현재는 업기 기능 보류 중이므로 처리 생략
+                // 추후: currentToken.stackWith(t);
             }
         }
-        return false;
+        
+        // 다시 원래 위치로 복원 (실제 moveTo는 나중에 호출됨)
+        currentToken.moveTo(originalPosition);
+
+        // 2. 그 후 현재 말 이동
+        currentToken.moveTo(dest);
+        currentToken.getOwner().addTurn(-1);
+        System.out.println("dest: " + dest.getId());
+
+        // 3. 도착 칸이 goal 이면 종료 처리
+        if (dest.isGoal()) {
+            currentToken.setFinished(true);
+            pcs.firePropertyChange("tokenFinished", null, currentToken.getId());
+            nextTurn();
+            checkPlayerWin();
+            return true;
+        }
+
+        // 4. 다음 턴 처리
+        List<Token> tokensAfterMove = getTokensAt(dest);
+        if (!tokensAfterMove.isEmpty()) {
+            waitForCapture = true;
+        }
+        if (!waitForCapture) {
+            nextTurn();
+        }
+        return true;
     }
+
+    
+
+
 
     public void handleStacking(Token token, Position position) {
         // position에 token이 업을 수 있는 말이 있는지 확인
@@ -242,7 +299,7 @@ public class Game {
             for (Token targetToken: capturableTokens) {
                 if (rules.canCapture(token, targetToken)) {
                     targetToken.reset();
-                    token.getOwner().addTurn(1); // 말을 잡았다면 현재 턴 수에서 +1
+//                    token.getOwner().addTurn(1); // 말을 잡았다면 현재 턴 수에서 +1 -> ruleset 에서 구현했으므로 중복
                     if (currentTossResult == TossResult.YUT || currentTossResult == TossResult.MO) {
                         token.getOwner().addTurn(-1);
                     }
@@ -276,4 +333,6 @@ public class Game {
     public int getPlayerCount() { return players.size(); }
     public int getTokenCount() { return tokenCount; }
     public String getShapeType() { return shapeType; }
+    public List<Token> getCapturedTokens() {return new ArrayList<>(capturedTokens);
+    }
 }

@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +16,23 @@ public class Player {
         this.name = name;
         this.playerId = playerId;
         this.tokens = new ArrayList<>();
+        
+        double startX = 800 - 150;
+        double startY = 600 - 350;
+        int diameter = 24;
+
         for (int i = 0; i < tokenCount; i++) {
-            tokens.add(new Token(playerId*10 + i, color,this, board));
+            int tokenId = playerId * 10 + i;
+
+            double x = startX + diameter * i + i * 8;
+            double y = startY + diameter * playerId + playerId * 15;
+
+            Point2D.Double startPos = new Point2D.Double(x, y);
+            Position initialPosition=board.getStartPosition();
+
+            tokens.add(new Token(tokenId, color, this, board, startPos, initialPosition));
         }
+
     }
 
     public void setTokens(List<Token> tokens) {

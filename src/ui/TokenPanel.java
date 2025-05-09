@@ -13,6 +13,7 @@ import controller.GameController;
 
 public class TokenPanel extends JComponent {
     private final BoardPanel board;
+    private final ControlPanel control;
     private GameController controller;
     private final List<Integer> nodeIndices = new ArrayList<>();
     private final List<Integer> tokens = new ArrayList<>();
@@ -28,9 +29,10 @@ public class TokenPanel extends JComponent {
     private int tokenCount;
     private int clickedToken = -1;
 
-    public TokenPanel(BoardPanel board, StartPanel startPanel, GameController controller) {
+    public TokenPanel(BoardPanel board, ControlPanel control, StartPanel startPanel, GameController controller) {
         this.board = board;
-        this.controller = controller;
+      this.control = control;
+      this.controller = controller;
         this.playerCount = startPanel.getSelectedPlayerCount();
         this.tokenCount = startPanel.getSelectedTokenCount();
         setOpaque(false);
@@ -103,9 +105,27 @@ public class TokenPanel extends JComponent {
         SwingUtilities.invokeLater(() -> {
             revalidate();
             repaint();
+
+            // token 이동 끝난 후 던지기 버튼 다시 보여줌
+            if (control != null) {
+                control.showTossButtons();
+            }
+            else
+                System.out.println("컨트롤이 널입니다");
         });
     }
 
+    // overloading : 잡혔을 때 시작 위치로 토큰을 보낼 때만 사용
+    public void updateTokenPosition(int tokenId, Point2D.Double position) { 
+        int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
+        tokenPositions.set(idx, position);
+
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
+    }
+    
     public int getClickedToken(MouseEvent e) {
         Point2D.Double clickPoint = new Point2D.Double(e.getX(), e.getY());
         for (int i = 0; i < tokens.size(); i++) {

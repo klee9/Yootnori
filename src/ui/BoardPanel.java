@@ -156,7 +156,7 @@ public class BoardPanel extends JPanel {
         if (yutTimer != null && yutTimer.isRunning()) {
             yutTimer.stop();
         }
-        yutTimer = new Timer(3000, _ -> removeYutImage());
+        yutTimer = new Timer(3000, e -> removeYutImage());
         yutTimer.setRepeats(false);
         yutTimer.start();
     }

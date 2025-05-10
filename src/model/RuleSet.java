@@ -14,7 +14,6 @@ public class RuleSet {
     }
 
     public boolean checkMove(Position currPos, Position nextPos, TossResult tossResult) {
-        System.out.printf("trying to move from %d to %d using %s", currPos.getId(), nextPos.getId(), tossResult);
         if (tossResult == TossResult.BACKDO) {
             return currPos.getPrevPositions().contains(nextPos);
         }

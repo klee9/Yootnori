@@ -140,11 +140,13 @@ public class GameController implements GameEventListener {
     public void onConfirmExit() { game.endGame(); } // TODO: 게임 종료 거절 버튼을 누르면 UI상에서 뒤로가기만 수행하면 될 것 같아요
     @Override
     public void onConfirmRestart() { game.restartGame(); }
+    public int onAutoControl() { return game.checkAutoControl(); }
 
     public void setInfoPanel(PlayerInfoPanel infoPanel) { this.infoPanel = infoPanel; }
     public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
     public void setControlPanel(ControlPanel control) { this.control = control; }
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getPlayerId(); }
+    public int getCurrentTokenId() { return game.getCurrentToken().getId(); }
     public Token findTokenById(int id) {
         for (Player player : game.getPlayers()) {
             for (Token t : player.getTokens()) {

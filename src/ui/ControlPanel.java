@@ -13,6 +13,7 @@ import java.util.List;
 public class ControlPanel extends JPanel {
     private GameController controller;
     private BoardPanel board;
+    private TokenPanel tokenPanel;
 
     JButton randomYutButton = new JButton("랜덤 윷 던지기");
     JButton fixedYutButton = new JButton("지정 윷 던지기");
@@ -33,6 +34,13 @@ public class ControlPanel extends JPanel {
             tossResult = controller.onRandomToss();
             board.showYutImage(tossResult);
             showResultOnly(resultTranslate(tossResult));
+            int autoMove = controller.onAutoControl();
+            if (autoMove > -1) {
+                // 가능한 경로를 가져와서 마지막 경로 선택
+                int posId = board.autoClickPosition(autoMove);
+                int tokenId = controller.getCurrentTokenId();
+                tokenPanel.updateTokenPosition(tokenId, posId);
+            }
         });
 
         fixedYutButton.addActionListener(e -> {
@@ -44,6 +52,13 @@ public class ControlPanel extends JPanel {
                     tossResult = controller.onSpecifiedToss(res);
                     board.showYutImage(tossResult);
                     showResultOnly(resultTranslate(tossResult));
+                    int autoMove = controller.onAutoControl();
+                    if (autoMove > -1) {
+                        // 가능한 경로를 가져와서 마지막 경로 선택
+                        int posId = board.autoClickPosition(autoMove);
+                        int tokenId = controller.getCurrentTokenId();
+                        tokenPanel.updateTokenPosition(tokenId, posId);
+                    }
                 });
                 menu.add(item);
             }
@@ -107,6 +122,7 @@ public class ControlPanel extends JPanel {
         repaint();
     }
 
+    public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
     public int getLabelsSize() { return resultLabels.size(); }
     public void displayThrowResult(TossResult result) {}
     public void updateTurnLabel(Player player) {}

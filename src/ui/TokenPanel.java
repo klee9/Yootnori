@@ -28,7 +28,7 @@ public class TokenPanel extends JComponent implements KeyListener {
     };
     private int playerCount;
     private int tokenCount;
-    private int clickedToken = -1;
+    private int clickedToken = 0;
 
     private Integer pendingCarrier = null;
     private Integer baseToken = null;
@@ -146,11 +146,6 @@ public class TokenPanel extends JComponent implements KeyListener {
         SwingUtilities.invokeLater(() -> {
             revalidate();
             repaint();
-
-            // token 이동 끝난 후 던지기 버튼 다시 보여줌 -> YutResults가 empty이면 다시 보여줌
-//            if (control != null && control.getLabelsSize() == 1) {
-//                control.showTossButtons();
-//            }
         });
     }
 

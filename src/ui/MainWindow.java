@@ -71,6 +71,7 @@ public class MainWindow extends JFrame implements UiInterface {
         controlPanel = new ControlPanel(controller, boardPanel);
         tokenPanel = new TokenPanel(boardPanel, controlPanel, startPanel, controller);
         boardPanel.setTokenPanel(tokenPanel);
+        controlPanel.setTokenPanel(tokenPanel);
         infoPanel = new PlayerInfoPanel(playerCount, tokenCount);
         controller.setInfoPanel(infoPanel);
         controller.setTokenPanel(tokenPanel);

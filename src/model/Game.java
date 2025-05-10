@@ -62,7 +62,7 @@ public class Game {
         this.gameState = GameState.READY;
         this.rules = new RuleSet(shapeType);
         this.currentTurn = 1;
-        this.currentToken = getCurrentPlayer().getTokens().get(0);
+        this.currentToken = players.get(0).getTokens().get(0);
         this.capturedTokens = new ArrayList<>();
     }
 
@@ -70,11 +70,11 @@ public class Game {
         // 현재 플레이어가 턴을 모두 소진하면 다음 플레이어로 이동
         if (players.get(currentPlayerId).getTurns() <= 0) {
             players.get(currentPlayerId).addTurn(1);
+            updateCurrentToken();
             currentPlayerId = (currentPlayerId + 1) % players.size();
             pcs.firePropertyChange("nextTurn", false, true);
             currentTurn++;
             YutResults.clear();
-            currentToken = getCurrentPlayer().getTokens().get(0);
             return true;
         }
         return false;
@@ -185,7 +185,6 @@ public class Game {
 
     public void selectToken(int tokenIndex) {
         if (currentPlayerId != tokenIndex/10) {
-            System.out.println("WTF!!1");
             currentToken = getCurrentPlayer().getTokens().get(0);
         }
         else {
@@ -206,7 +205,7 @@ public class Game {
                 currentToken.moveTo(dest);
                 currentToken.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
                 YutResults.remove(result);
-                System.out.println("[Game] "+result+"로 말을 이동했습니다. 남은 턴: " + getCurrentPlayer().getTurns());
+                System.out.println("[Game] Token" + currentToken.getId() + "을 " +result+"로 이동했습니다. 남은 턴: " + getCurrentPlayer().getTurns());
                 for (TossResult tossResult : YutResults) {
                     System.out.printf("남은 이동: %s\n", tossResult);
                 }
@@ -290,7 +289,43 @@ public class Game {
         }
         return tokens;
     }
-    // 보드가 아니라 토큰이 클릭돼서 스태킹이 작동하지 않음.
+
+    public int checkAutoControl() {
+        List<Token> tokens = getCurrentPlayer().getTokens();
+        int cnt = 0;
+
+        // 보드에 말이 없거나 남은 말이 하나라면
+        for (Token t : tokens) {
+            if (!t.getPosition().isStart()) { cnt++; }
+        }
+
+        if (cnt == 0 || getCurrentPlayer().getRemainingTokens() == 1 && YutResults.size() == 1) {
+            updateCurrentToken();
+
+            List<Position> positions = currentToken.getPosition().getNextPositions();
+            Position q = null;
+            for (Position p : positions) {
+                q = p;
+                for (int i = 1; i < YutResults.get(0).getValue(); i++) {
+                    q = q.getNextPositions().get(0);
+                    System.out.println("calculating... " + q.getId());
+                }
+            }
+            applyMoveTo(q); // Move to the calculated position
+            return q.getId();
+        }
+
+        return -1;
+    }
+
+    private void updateCurrentToken() {
+        for (Token token : getCurrentPlayer().getTokens()) {
+            if (!token.isFinished()) {
+                currentToken = token;
+                return;
+            }
+        }
+    }
 
     // getters
     public Player getPrevPlayer() { return players.get((currentPlayerId-1+playerCount)%playerCount); }

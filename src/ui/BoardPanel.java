@@ -498,6 +498,30 @@ public class BoardPanel extends JPanel {
         return idToRaw[0];
     }
 
+    public int autoClickPosition(int positionId) {
+        Point2D.Double pos = getNodePosition(positionId);
+
+        int cellSize = getCellSize();
+        int offsetX = getOffsetX();
+        int offsetY = getOffsetY();
+        int x = toPixelX(pos.x, cellSize, offsetX);
+        int y = toPixelY(pos.y, cellSize, offsetY);
+
+        MouseEvent clickEvent = new MouseEvent(
+                this,
+                MouseEvent.MOUSE_CLICKED,
+                System.currentTimeMillis(),
+                0,
+                x, y,
+                1,
+                false
+        );
+
+        dispatchEvent(clickEvent);
+        System.out.println("[BoardPanel] Programmatically clicked position: " + positionId);
+        return positionId;
+    }
+
     public void setClickable(boolean clickable) { this.clickable = clickable; }
     public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
 }

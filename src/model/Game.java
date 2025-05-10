@@ -68,7 +68,6 @@ public class Game {
 
     public boolean nextTurn() {
         // 현재 플레이어가 턴을 모두 소진하면 다음 플레이어로 이동
-        System.out.println("Current player: " + currentPlayerId + " turn: " + getCurrentPlayer().getTurns());
         if (players.get(currentPlayerId).getTurns() <= 0) {
             players.get(currentPlayerId).addTurn(1);
             currentPlayerId = (currentPlayerId + 1) % players.size();
@@ -169,7 +168,6 @@ public class Game {
             pcs.firePropertyChange("cantMove", null, cantMove&allAtStart);
             if (allAtStart && cantMove) {
                 getCurrentPlayer().addTurn(-1);
-                System.out.println("current player: " + getCurrentPlayer().getPlayerId() + ", turns: " + getCurrentPlayer().getTurns());
                 nextTurn();
                 return TossResult.BACKDO;
             }
@@ -187,6 +185,7 @@ public class Game {
 
     public void selectToken(int tokenIndex) {
         if (currentPlayerId != tokenIndex/10) {
+            System.out.println("WTF!!1");
             currentToken = getCurrentPlayer().getTokens().get(0);
         }
         else {
@@ -203,54 +202,45 @@ public class Game {
                 currentMove = result;
                 capturedTokens.clear();
 
-                // 이동 전 원래 위치 저장 -> 임시로 이동한 것처럼 위치만 변경 (실제 이동은 나중에)
-                Position originalPosition = currentToken.getPosition();
-                currentToken.moveTo(dest);
-
-                // 1. 먼저 도착지의 토큰들에 대해 잡기/업기 조건 확인
-                for (Token t : tokensOnDest) {
-                    if (rules.canCapture(currentToken, t, result)) {
-                        t.reset();
-                        capturedTokens.add(t);
-                        System.out.println("[Game] 말을 잡았습니다.");
-                        if (currentMove.getValue() < 4) {
-                            pcs.firePropertyChange("turnsLeft", null, 0);
-                        }
-                    } else if (rules.canStack(currentToken, t)) {
-                        System.out.println("[Game] 업기 조건 충족됨 - 스태킹 처리");
-                        handleStacking(currentToken, dest);
-                        currentToken.getOwner().addTurn(-1);
-                        YutResults.remove(result);
-                        pcs.firePropertyChange("movesLeft", null, YutResults.size());
-                        nextTurn();
-                        return true;
-                    }
-                }
-
-                // 다시 원래 위치로 복원
-                currentToken.moveTo(originalPosition);
-
-                // 2. 그 후 현재 말 이동
+                // 말 먼저 이동
                 currentToken.moveTo(dest);
                 currentToken.getOwner().addTurn(-1); // 움직였으면 현재 턴 수에서 -1
+                YutResults.remove(result);
+                System.out.println("[Game] "+result+"로 말을 이동했습니다. 남은 턴: " + getCurrentPlayer().getTurns());
+                for (TossResult tossResult : YutResults) {
+                    System.out.printf("남은 이동: %s\n", tossResult);
+                }
 
-                // 3. 도착 칸이 goal이면 종료 처리
+                // 도착 칸이 goal이면 종료 처리
                 if (dest.isGoal()) {
                     currentToken.setFinished(true);
                     pcs.firePropertyChange("tokenFinished", null, currentToken.getId());
                     nextTurn();
                     checkPlayerWin();
-                    YutResults.remove(result);
                     return true;
                 }
-                else {
-                    YutResults.remove(result);
-                    pcs.firePropertyChange("movesLeft", null, YutResults.size());
-                    List<Token> tokensAfterMove = getTokensAt(dest);
-                    if (!tokensAfterMove.isEmpty()) { waitForCapture = true; }
-                    if (!waitForCapture) { nextTurn(); }
-                    return true;
+
+                // 말 잡기/업기 조건 확인 --> 이후 예/아니오 추가
+                Token tempToken = new Token(50, Color.BLACK, getCurrentPlayer(),board, null, null);
+                tempToken.moveTo(dest);
+
+                for (Token t : tokensOnDest) {
+                    if (rules.canCapture(tempToken, t, result)) {
+                        t.reset();
+                        capturedTokens.add(t);
+                        System.out.println("[Game] 말을 잡았습니다. 남은 턴: " + getCurrentPlayer().getTurns());
+                        if (currentMove.getValue() < 4) {
+                            pcs.firePropertyChange("turnsLeft", null, 0);
+                        }
+                    }
+                    if (rules.canStack(tempToken, t)) {
+                        System.out.println("[Game] 업기 조건 충족됨");
+                        handleStacking(currentToken, dest);
+                    }
                 }
+                tempToken = null;
+                nextTurn();
+                return true;
             }
         }
         return false;
@@ -265,31 +255,18 @@ public class Game {
             }
         }
 
-        // carrier + stackedTokens 전부 새 위치로 이동
-        carrier.moveTo(position);
-
         // UI 갱신용 이벤트 - carrier 자신과 업힌 토큰들
         pcs.firePropertyChange("tokenMoved", null, carrier.getId());
         for (Token t : carrier.getStackedTokens()) {
             pcs.firePropertyChange("tokenMoved", null, t.getId());
         }
-
-        // 스태킹도 움직임이므로 턴 소모
-        carrier.getOwner().addTurn(-1);
-
-        // 남은 윷 결과 갱신 (현재 이동에 해당하는 결과 제거)
-        YutResults.remove(currentMove);
-        pcs.firePropertyChange("movesLeft", null, YutResults.size());
-
-        // 다음 턴으로 전환
-        nextTurn();
     }
-
 
     public void handleCapturing(Token token, Position position) {
         // position에 token이 잡을 수 있는 말이 있는지 확인
         List<Token> capturableTokens = getTokensAt(position);
         if (!capturableTokens.isEmpty()) {
+            waitForCapture = !waitForCapture;
             for (Token targetToken: capturableTokens) {
                 if (rules.canCapture(token, targetToken, currentMove)) {
                     targetToken.reset();
@@ -299,33 +276,26 @@ public class Game {
                 }
             }
         }
-        if (waitForCapture) {
-            waitForCapture = false;
-            nextTurn();
-        }
     }
 
     public List<Token> getTokensAt(Position position) {
         List<Token> tokens = new ArrayList<>();
         for (Player player : players) {
             for (Token t : player.getTokens()) {
-                if (t.getId() != currentToken.getId() && t.getPosition() != null && t.getPosition().equals(position) && !t.isFinished()) {
+                if (t.getId() != currentToken.getId() && t.getPosition().getId() == position.getId() && !t.isFinished()) {
                     tokens.add(t);
+                    System.out.printf("On position: %d are %d\n", position.getId(), t.getId());
                 }
             }
         }
         return tokens;
     }
-
+    // 보드가 아니라 토큰이 클릭돼서 스태킹이 작동하지 않음.
 
     // getters
-    public GameState getState() { return gameState; }
     public Player getPrevPlayer() { return players.get((currentPlayerId-1+playerCount)%playerCount); }
     public Player getCurrentPlayer() { return players.get(currentPlayerId); }
     public Token getCurrentToken() { return currentToken; }
-    public int getPlayerCount() { return players.size(); }
-    public int getTokenCount() { return tokenCount; }
-    public String getShapeType() { return shapeType; }
     public List<Token> getCapturedTokens() { return capturedTokens; }
     public List<Player> getPlayers() { return players; }
 }

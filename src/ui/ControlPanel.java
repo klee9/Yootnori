@@ -97,7 +97,7 @@ public class ControlPanel extends JPanel {
         resultLabel.setOpaque(true);
         resultLabel.setBackground(new Color(255, 240, 200));
         resultLabel.setBorder(BorderFactory.createLineBorder(new Color(0xC3864A)));
-        resultLabel.setPreferredSize(new Dimension(50, 50));
+        resultLabel.setPreferredSize(new Dimension(75, 50));
         resultLabel.setHorizontalAlignment(SwingConstants.CENTER); // 가로 중앙 정렬
         resultLabel.setVerticalAlignment(SwingConstants.CENTER);
         resultLabels.add(resultLabel);

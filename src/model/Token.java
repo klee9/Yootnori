@@ -47,11 +47,15 @@ public class Token {
         this.stackedTokens.addAll(other.getStackedTokens().stream().filter(token -> token != this).toList());
         other.stackedTokens.add(this);
         other.stackedTokens.addAll(this.getStackedTokens().stream().filter(token -> token != other).toList());
+        for (Token t : other.getStackedTokens()) {
+            System.out.println(this.getId() + " stacked with " + t.getId());
+        }
     }
 
     public void moveTo(Position newPos) {
         this.position = newPos;
         for (Token t : stackedTokens) {
+            System.out.println("[Token]: Moving " + t.getId() + " to " + newPos.getId());
             t.position = newPos;
         }
     }

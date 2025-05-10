@@ -9,13 +9,14 @@ public class Player {
     private int playerId;
     private String name;
     private List<Token> tokens;
-    private int turns = 1;
+    private int turns;
 
     // 플레이어 생성자 플레이어 이름 ,플레이어 ID, 말의 개수, 말의 모양(type)로 생성한다.
     public Player(String name, int playerId, int tokenCount, Color color, Board board) {
         this.name = name;
         this.playerId = playerId;
         this.tokens = new ArrayList<>();
+        this.turns = 1;
 
         double startX = 650;
         double startY = 250;

@@ -14,6 +14,7 @@ public class RuleSet {
     }
 
     public boolean checkMove(Position currPos, Position nextPos, TossResult tossResult) {
+        System.out.printf("trying to move from %d to %d using %s", currPos.getId(), nextPos.getId(), tossResult);
         if (tossResult == TossResult.BACKDO) {
             return currPos.getPrevPositions().contains(nextPos);
         }
@@ -44,10 +45,7 @@ public class RuleSet {
     }
 
     public boolean canStack(Token tokenA, Token tokenB) {
-        if (tokenA.getStackedTokens().contains(tokenB)) {
-            return false;
-        }
-        return tokenA.getId() != tokenB.getId() && tokenA.getOwner() == tokenB.getOwner() && tokenA.getPosition() == tokenB.getPosition();
+        return tokenA.getId() != tokenB.getId() && tokenA.getOwner() == tokenB.getOwner() && tokenA.getPosition().getId() == tokenB.getPosition().getId() && tokenB.getPosition().getId() != 0;
     }
 
     public boolean canCapture(Token tokenA, Token tokenB, TossResult tossResult) {

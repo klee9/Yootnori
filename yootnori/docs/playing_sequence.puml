@@ -1,0 +1,42 @@
+@startuml
+
+participant Player
+participant UI
+participant Game
+participant RuleSet
+participant MoveResult
+participant Board
+
+group Step 1: 윷 던지기
+    autonumber 1 "(0)"
+    loop result == "again", 1, *
+        Player -> UI: tossYut()
+        UI -> Game: computeToss()
+        Game -> RuleSet: checkToss()
+        RuleSet -> Game: sendResult()
+        Game -> Player: result = forwardTossResult()
+        Game -> MoveResult: appendResult()
+    end
+end
+
+group Step 2: 말 옮기기
+    autonumber 1 "(0)"
+    loop val == false, 1, *
+        Player -> UI: moveToken()
+        UI -> Game: computeMove()
+        Game -> RuleSet: validateMove()
+        RuleSet -> Game: sendResult()
+        Game -> Player: val = forwardMoveResult()
+        Game -> Board: updatePos()
+    end
+end
+
+group Step 3: 보드 표시
+    autonumber 1 "(0)"
+    Game -> Board: getState()
+    Board -> Game: returnState()
+    Game -> UI: updateUI()
+    UI -> Player: displayGame()
+end
+
+@enduml

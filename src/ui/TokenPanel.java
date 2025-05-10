@@ -19,7 +19,9 @@ public class TokenPanel extends JComponent implements KeyListener {
     private final List<Integer> tokens = new ArrayList<>();
     private final List<Point2D> tokenPositions = new ArrayList<>();
     private boolean clickable = true;
+    private boolean drawOnSide;
     private final int diameter = 24;
+    private final int offsetCnt = 0;
     private final Color[] colors = {
             new Color(100, 149, 237), // 파랑
             new Color(240, 128, 128), // 빨강
@@ -28,10 +30,7 @@ public class TokenPanel extends JComponent implements KeyListener {
     };
     private int playerCount;
     private int tokenCount;
-    private int clickedToken = 0;
-
-    private Integer pendingCarrier = null;
-    private Integer baseToken = null;
+    private int clickedToken;
 
     public TokenPanel(BoardPanel board, ControlPanel control, StartPanel startPanel, GameController controller) {
         this.board = board;
@@ -39,6 +38,8 @@ public class TokenPanel extends JComponent implements KeyListener {
         this.controller = controller;
         this.playerCount = startPanel.getSelectedPlayerCount();
         this.tokenCount = startPanel.getSelectedTokenCount();
+        this.drawOnSide = false;
+        this.clickedToken = 0;
         setOpaque(false);
 
         // 말 개수만큼 말 및 초기 위치 정보 추가
@@ -52,7 +53,6 @@ public class TokenPanel extends JComponent implements KeyListener {
                 tokenPositions.add(new Point2D.Double(startX + diameter * j + j * 8, startY + diameter * i + i * 15));
             }
         }
-
 
         // 토큰을 클릭하면 토큰 패널은 눌리지 않아야 함. 다시 누르고 싶으면 키를 눌러서 하기
         // 이벤트가 보드에 전송되기 때문에 보드의 같은 위치에 토큰이 여러개 있으면 스택해야 함.
@@ -120,10 +120,11 @@ public class TokenPanel extends JComponent implements KeyListener {
         }
     }
 
+    // 노드 위에 있는 말의 개수에 따라 양옆으로 이동시켜야 함
     public void updateTokenPosition(int tokenId, int positionId) {
         int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
 
-        if (positionId == -1) { // move to somehwere
+        if (positionId == -1) { // move off-screen
             SwingUtilities.invokeLater(() -> {
                 tokenPositions.set(idx, new Point2D.Double(50, 400));
                 revalidate();
@@ -131,17 +132,30 @@ public class TokenPanel extends JComponent implements KeyListener {
             });
             return;
         }
+
+        int spacing = 0;
+        if (drawOnSide) {
+            System.out.println("옆에 그려야 함");
+            spacing = diameter;
+        }
+        int size = controller.numOfTokensOnPosition(positionId);
         int cellSize = board.getCellSize();
         int offsetX = board.getOffsetX();
         int offsetY = board.getOffsetY();
-
         Point2D.Double grid = board.getNodePosition(positionId);
 
         int x = board.toPixelX(grid.x, cellSize, offsetX);
         int y = board.toPixelY(grid.y, cellSize, offsetY);
 
-        System.out.println("[Controller] 인덱스: " + idx + " 아이디: " + tokenId);
-        tokenPositions.set(idx, new Point2D.Double(x - diameter / 2.0, y - diameter / 2.0));
+        // Calculate the offset to arrange tokens side by side
+
+        int tokenIndex = controller.getCurrentTokenId();
+
+        // Adjust x-coordinate based on the number of tokens at the same position
+        int xOffset = size * spacing;
+
+        // Position the token with calculated offset
+        tokenPositions.set(idx, new Point2D.Double(x - diameter / 2.0 + xOffset, y - diameter / 2.0));
 
         SwingUtilities.invokeLater(() -> {
             revalidate();
@@ -189,6 +203,10 @@ public class TokenPanel extends JComponent implements KeyListener {
 
     public void setClickable(boolean clickable) {
         this.clickable = clickable;
+    }
+
+    public void setDrawOnSide(boolean drawOnSide) {
+        this.drawOnSide = drawOnSide;
     }
 
     @Override

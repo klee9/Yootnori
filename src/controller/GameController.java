@@ -73,6 +73,18 @@ public class GameController implements GameEventListener {
                 tokenPanel.updateTokenPosition(tokenId, nodeIdx);
             }
         });
+
+        game.addPropertyChangeListener(evt -> {
+            if ("stack".equals(evt.getPropertyName())) {
+                control.promptStack();
+            }
+        });
+
+        game.addPropertyChangeListener(evt -> {
+            if ("capture".equals(evt.getPropertyName())) {
+                control.promptCapture();
+            }
+        });
     }
 
     /* 게임 시작 로직
@@ -112,10 +124,13 @@ public class GameController implements GameEventListener {
     @Override
     public boolean onMoveTokens(Position destination) {
         boolean moveSuccess = game.applyMoveTo(destination);
+        System.out.println("Checked moved: " + moveSuccess);
 
+        // 이게 콜 되지 않아서 자동으로 움직일 때 말이 리셋되지 않음
         if (moveSuccess) {
             List<Token> captured = game.getCapturedTokens();
             for (Token t : captured) {
+                System.out.println("Cleaning up: " + t.getId());
                 tokenPanel.updateTokenPosition(t.getId(), t.getStartPosition());
             }
         }
@@ -140,13 +155,19 @@ public class GameController implements GameEventListener {
     public void onConfirmExit() { game.endGame(); } // TODO: 게임 종료 거절 버튼을 누르면 UI상에서 뒤로가기만 수행하면 될 것 같아요
     @Override
     public void onConfirmRestart() { game.restartGame(); }
-    public int onAutoControl() { return game.checkAutoControl(); }
 
+    public int numOfTokensOnPosition(int posId) {
+        return game.getUniqueTokenCnt(posId);
+    }
+    public int onAutoControl() { return game.checkAutoControl(); }
+    public void onConfirmCapture(boolean capture) { game.setConfirmCapture(true); }
+    public void onConfirmStack(boolean stack) { game.setConfirmStack(true); }
     public void setInfoPanel(PlayerInfoPanel infoPanel) { this.infoPanel = infoPanel; }
     public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
     public void setControlPanel(ControlPanel control) { this.control = control; }
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getPlayerId(); }
     public int getCurrentTokenId() { return game.getCurrentToken().getId(); }
+    public int getCurrentTokenPos() { return game.getCurrentToken().getPosition().getId(); }
     public Token findTokenById(int id) {
         for (Player player : game.getPlayers()) {
             for (Token t : player.getTokens()) {
@@ -154,5 +175,8 @@ public class GameController implements GameEventListener {
             }
         }
         return null;
+    }
+    public Position findPositionById(int id) {
+        return game.idToPosition(id);
     }
 }

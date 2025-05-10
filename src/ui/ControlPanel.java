@@ -34,12 +34,13 @@ public class ControlPanel extends JPanel {
             tossResult = controller.onRandomToss();
             board.showYutImage(tossResult);
             showResultOnly(resultTranslate(tossResult));
+            // 가능한 경로를 가져와서 마지막 경로 선택
             int autoMove = controller.onAutoControl();
-            if (autoMove > -1) {
-                // 가능한 경로를 가져와서 마지막 경로 선택
+            if (autoMove != -1) {
                 int posId = board.autoClickPosition(autoMove);
                 int tokenId = controller.getCurrentTokenId();
                 tokenPanel.updateTokenPosition(tokenId, posId);
+                controller.onMoveTokens(controller.findPositionById(posId));
             }
         });
 
@@ -52,12 +53,13 @@ public class ControlPanel extends JPanel {
                     tossResult = controller.onSpecifiedToss(res);
                     board.showYutImage(tossResult);
                     showResultOnly(resultTranslate(tossResult));
+                    // 가능한 경로를 가져와서 마지막 경로 선택
                     int autoMove = controller.onAutoControl();
-                    if (autoMove > -1) {
-                        // 가능한 경로를 가져와서 마지막 경로 선택
+                    if (autoMove != -1) {
                         int posId = board.autoClickPosition(autoMove);
                         int tokenId = controller.getCurrentTokenId();
                         tokenPanel.updateTokenPosition(tokenId, posId);
+                        controller.onMoveTokens(controller.findPositionById(posId));
                     }
                 });
                 menu.add(item);
@@ -120,6 +122,33 @@ public class ControlPanel extends JPanel {
 
         revalidate();
         repaint();
+    }
+
+    public void promptCapture() {
+        Object[] options = {"예", "아니오"};
+        int choice = JOptionPane.showOptionDialog(null, "말을 잡으시겠습니까?", "말 잡기",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+        if (choice == 0) {
+            controller.onConfirmCapture(true);
+            tokenPanel.setDrawOnSide(false);
+        }
+        else if (choice == 1) {
+            tokenPanel.setDrawOnSide(true);
+            tokenPanel.updateTokenPosition(controller.getCurrentTokenId(), controller.getCurrentTokenPos());
+        }
+    }
+
+    public void promptStack() {
+        Object[] options = {"예", "아니오"};
+        int choice = JOptionPane.showOptionDialog(null, "말을 업으시겠습니까?", "말 업기",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+        if (choice == 0) {
+            controller.onConfirmStack(true);
+            tokenPanel.setDrawOnSide(false);
+        }
+        else if (choice == 1) { tokenPanel.setDrawOnSide(true); }
     }
 
     public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }

@@ -5,10 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="84e73576-e8af-4405-9c71-9f0708f39cfb" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/controller/GameController.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/controller/GameController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/model/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/model/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/BoardPanel.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/yootnori/ui/TokenPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/TokenPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TokenPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/GameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Game.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

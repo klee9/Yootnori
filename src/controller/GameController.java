@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.AbstractMap.SimpleEntry;
 import model.*;
 import ui.ControlPanel;
 import ui.MainWindow;
@@ -73,6 +74,45 @@ public class GameController implements GameEventListener {
                 tokenPanel.updateTokenPosition(tokenId, nodeIdx);
             }
         });
+        game.addPropertyChangeListener(evt -> {
+            String name = evt.getPropertyName();
+            if (!name.equals("stackRequest") && !name.equals("captureRequest")) return;
+
+            @SuppressWarnings("unchecked")
+            SimpleEntry<Token,Token> req = (SimpleEntry<Token,Token>) evt.getNewValue();
+            Token actor  = req.getKey();
+            Token target = req.getValue();
+
+            String msg   = name.equals("stackRequest")
+                ? "말을 업으시겠습니까?"
+                : "말을 잡으시겠습니까?";
+            String title = name.equals("stackRequest") ? "말 업기" : "말 잡기";
+
+            int choice = JOptionPane.showConfirmDialog(tokenPanel, msg, title,
+                JOptionPane.YES_NO_OPTION);
+
+            // 아니오/닫기: 이동 복구하고 끝
+            if (choice != JOptionPane.YES_OPTION) {
+                game.undoLastMove(); // 모델 상태 되돌리기
+                return;
+            }
+
+            // 예: 실제 업기/잡기 실행
+            if (name.equals("stackRequest")) {
+                game.handleStacking(actor, target.getPosition());
+                tokenPanel.updateTokenPosition(actor.getId(),  target.getPosition().getId());
+                tokenPanel.updateTokenPosition(target.getId(), target.getPosition().getId());
+                for (Token t : actor.getStackedTokens()) {
+                    tokenPanel.updateTokenPosition(t.getId(), target.getPosition().getId());
+                }
+            } else { // captureRequest
+                game.handleCapturing(actor, target.getPosition());
+                for (Token t : game.getCapturedTokens()) {
+                    tokenPanel.updateTokenPosition(t.getId(), t.getStartPosition());
+                }
+            }
+        });
+
     }
 
     /* 게임 시작 로직

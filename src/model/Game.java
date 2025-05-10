@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -197,6 +198,15 @@ public class Game {
     public boolean applyMoveTo(Position dest) {
         for (TossResult result : YutResults) {
             if (rules.checkMove(currentToken.getPosition(), dest, result)) {
+
+                lastMove = new LastMove(
+                    currentToken,
+                    currentToken.getPosition(),
+                    dest,
+                    result,
+                    /*turnDelta=*/-1
+                );
+
                 // 도착 노드에 있는 말 찾기
                 List<Token> tokensOnDest = getTokensAt(dest);
                 currentMove = result;
@@ -226,16 +236,23 @@ public class Game {
 
                 for (Token t : tokensOnDest) {
                     if (rules.canCapture(tempToken, t, result)) {
-                        t.reset();
-                        capturedTokens.add(t);
+                        pcs.firePropertyChange(
+                            "captureRequest",
+                            null,
+                            new SimpleEntry<>(currentToken, t)
+                        );
                         System.out.println("[Game] 말을 잡았습니다. 남은 턴: " + getCurrentPlayer().getTurns());
                         if (currentMove.getValue() < 4) {
                             pcs.firePropertyChange("turnsLeft", null, 0);
                         }
                     }
                     if (rules.canStack(tempToken, t)) {
+                        pcs.firePropertyChange(
+                            "stackRequest",
+                            null,
+                            new SimpleEntry<>(currentToken, t)
+                        );
                         System.out.println("[Game] 업기 조건 충족됨");
-                        handleStacking(currentToken, dest);
                     }
                 }
                 tempToken = null;
@@ -264,15 +281,26 @@ public class Game {
 
     public void handleCapturing(Token token, Position position) {
         // position에 token이 잡을 수 있는 말이 있는지 확인
+        capturedTokens.clear();
+
+        // 1) 잡을 수 있는 말 찾기
         List<Token> capturableTokens = getTokensAt(position);
-        if (!capturableTokens.isEmpty()) {
-            waitForCapture = !waitForCapture;
-            for (Token targetToken: capturableTokens) {
-                if (rules.canCapture(token, targetToken, currentMove)) {
-                    targetToken.reset();
-                    if (currentMove == TossResult.YUT || currentMove == TossResult.MO) {
-                        token.getOwner().addTurn(-1);
-                    }
+        if (capturableTokens.isEmpty()) return;
+
+        for (Token targetToken : capturableTokens) {
+            if (rules.canCapture(token, targetToken, currentMove)) {
+                /* 2) 말 리셋 */
+                targetToken.reset();
+
+                /* 3) 잡힌 말 목록에 추가 ― 컨트롤러가 UI 갱신용으로 사용 */
+                capturedTokens.add(targetToken);                        // ★ 추가
+
+                /* 4) 바로 UI에 위치 변경 통보 (토큰이 '출발'로 옮겨졌음을 그림) */
+                pcs.firePropertyChange("tokenMoved", null, targetToken.getId()); // ★ 추가
+
+                /* 5) 윷·모로 잡았으면 턴 소모 보정 */
+                if (currentMove == TossResult.YUT || currentMove == TossResult.MO) {
+                    token.getOwner().addTurn(-1);
                 }
             }
         }
@@ -291,6 +319,27 @@ public class Game {
         return tokens;
     }
     // 보드가 아니라 토큰이 클릭돼서 스태킹이 작동하지 않음.
+
+    private record LastMove(Token token,
+                            Position from,
+                            Position to,
+                            TossResult usedYut,
+                            int turnDelta) {}
+
+    private LastMove lastMove; // 가장 최근 위치 기억(다이얼로그에서 아니오 눌렀을 때 복구용)
+
+    public void undoLastMove() {
+        if (lastMove == null) return;
+
+        Token tok = lastMove.token();
+        tok.moveTo(lastMove.from()); // 위치 복구
+        getCurrentPlayer().addTurn(-lastMove.turnDelta()); // 턴 수 복구
+        YutResults.add(0, lastMove.usedYut()); // 윷 결과 복구
+
+        pcs.firePropertyChange("tokenMoved", null, tok.getId());
+
+        lastMove = null;
+    }
 
     // getters
     public Player getPrevPlayer() { return players.get((currentPlayerId-1+playerCount)%playerCount); }

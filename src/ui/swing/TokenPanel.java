@@ -1,4 +1,4 @@
-package ui;
+package ui.swing;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controller.GameController;
-import model.Position;
-import model.Token;
 
 public class TokenPanel extends JComponent implements KeyListener {
     private final BoardPanel board;

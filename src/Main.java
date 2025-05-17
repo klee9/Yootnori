@@ -1,6 +1,6 @@
 import controller.GameController;
 import model.Game;
-import ui.MainWindow;
+import ui.swing.MainWindow;
 
 import javax.swing.SwingUtilities;
 

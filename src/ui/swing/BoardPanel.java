@@ -1,8 +1,7 @@
-package ui;
+package ui.swing;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Objects;
 import javax.swing.*;
 
@@ -21,6 +20,7 @@ public class BoardPanel extends JPanel {
     private final int IMPORTANT_EXTRA = 6;
     private final int GRID = 6;
     private final int PADDING = 40;
+
     private final String shapeType;
     private JLabel yutImageLabel;
     private Timer  yutTimer;
@@ -30,8 +30,9 @@ public class BoardPanel extends JPanel {
     private final List<Integer> importantIndices = new ArrayList<>();
     private final List<Point2D.Double> actualNodePositions = new ArrayList<>();
 
-    private int[] idToRaw = null;
-    private int[] rawToId = null;
+    private int[] idToRaw;
+    private int[] rawToId;
+
     private boolean clickable = false;
     private TokenPanel tokenPanel;
 
@@ -63,27 +64,17 @@ public class BoardPanel extends JPanel {
 
         // 보드 모양에 따라서 매핑 추가
         switch (shapeType) {
-            case "사각형" -> {
-                idToRaw = new int[]{10,9,8,7,6,5,4,3,2,1,0,19,18,17,16,15,14,13,12,11,26,24,27,25,20,22,21,23,28};
-            }
-            case "오각형" -> {
-                idToRaw = new int[]{5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,0,1,2,3,4,29,28,31,30,33,32,35,34,27,26,25};
-            }
-            case "육각형" -> {
-                idToRaw = new int[]{15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,38,37,40,39,42,41,32,31,34,33,36,35,30};
-            }
+            case "사각형" -> idToRaw = new int[]{10,9,8,7,6,5,4,3,2,1,0,19,18,17,16,15,14,13,12,11,26,24,27,25,20,22,21,23,28};
+            case "오각형" -> idToRaw = new int[]{5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,0,1,2,3,4,29,28,31,30,33,32,35,34,27,26,25};
+            case "육각형" -> idToRaw = new int[]{15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,38,37,40,39,42,41,32,31,34,33,36,35,30};
             default -> throw new IllegalArgumentException("지원하지 않는 shapeType: " + shapeType);
         }
 
-        int n = raw.size();
-        rawToId = new int[n];
-        for (int i = 0; i < n; i++)
-            rawToId[idToRaw[i]] = i;
+        rawToId = new int[raw.size()];
+        for (int i = 0; i < idToRaw.length; i++) rawToId[idToRaw[i]] = i;
 
-        nodeGridPositions = new ArrayList<>(n);
-        for (int id = 0; id < n; id++) {
-            nodeGridPositions.add(raw.get(idToRaw[id]));
-        }
+        nodeGridPositions = new ArrayList<>(raw.size());
+        for (int id = 0; id < raw.size(); id++) nodeGridPositions.add(raw.get(idToRaw[id]));
 
         lineConnections = new ArrayList<>(rawLines.size());
         for (Point2D.Double[] edge : rawLines) {
@@ -116,11 +107,6 @@ public class BoardPanel extends JPanel {
                         System.out.println("[BoardPanel] 해당 위치로 움직일 수 없습니다. 다시 시도하세요.");
                     } else {
                         System.out.println("[BoardPanel] 말을 " + posId + "번째 칸으로 이동했습니다.");
-                        //tokenPanel.updateTokenPosition(currentToken, posId);
-//                        controller.onStackTokens(controller.findTokenById(currentToken), controller.onClickPosition(posId));
-//                        for (Token t : stackedTokens) {
-//                            tokenPanel.updateTokenPosition(t.getId(), posId);
-//                        }
                         tokenPanel.setClickable(true);
                         tokenPanel.repaint();
                         setClickable(false);

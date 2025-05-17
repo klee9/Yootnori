@@ -1,4 +1,4 @@
-package ui;
+package ui.swing;
 
 import model.Player;
 import model.Token;
@@ -7,6 +7,7 @@ import model.TossResult;
 import javax.swing.*;
 
 import controller.GameController;
+import ui.UiInterface;
 
 import java.awt.*;
 
@@ -130,9 +131,5 @@ public class MainWindow extends JFrame implements UiInterface {
         } else if (choice == JOptionPane.NO_OPTION) {
             System.exit(0);
         }
-    }
-
-    public PlayerInfoPanel getInfoPanel() {
-        return infoPanel;
     }
 }

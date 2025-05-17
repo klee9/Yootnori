@@ -1,10 +1,10 @@
 package controller;
 
 import model.*;
-import ui.ControlPanel;
-import ui.MainWindow;
-import ui.PlayerInfoPanel;
-import ui.TokenPanel;
+import ui.swing.ControlPanel;
+import ui.swing.MainWindow;
+import ui.swing.PlayerInfoPanel;
+import ui.swing.TokenPanel;
 
 import javax.swing.*;
 import java.beans.PropertyChangeEvent;

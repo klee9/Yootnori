@@ -10,6 +10,8 @@ public class RuleSet {
     }
 
     public boolean checkMove(Position currPos, Position nextPos, TossResult tossResult) {
+        boolean flag = currPos.getId() == 25 && shapeType == 4;
+
         // 빽도가 나오면, 현재 노드의 이전 노드에 이동하고자 하는 노드가 있다면 true
         if (tossResult == TossResult.BACKDO) {
             return currPos.getPrevPositions().contains(nextPos);
@@ -34,7 +36,12 @@ public class RuleSet {
                 if (q.isGoal()) {
                     return true;
                 }
-                q = q.getNextPositions().get(0);
+                if (q.getId() == 25) flag = true;
+                if (q.getId() == 28 && flag) {
+                    q = q.getNextPositions().get(1);
+                    flag = false;
+                }
+                else q = q.getNextPositions().get(0);
             }
             if (q.getId() == nextPos.getId()) {
                 return true;

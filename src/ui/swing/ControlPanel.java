@@ -1,10 +1,9 @@
-package ui;
+package ui.swing;
 
 import javax.swing.*;
 
 import controller.GameController;
 import model.Player;
-import model.Token;
 import model.TossResult;
 
 import java.awt.*;

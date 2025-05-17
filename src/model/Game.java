@@ -289,6 +289,8 @@ public class Game {
         boolean allStacked = currentToken.getStackedTokens().size() == (getCurrentPlayer().getRemainingTokens()-1);
         boolean allAtStart = tokens.stream().allMatch(t -> t.getPosition().isStart());
 
+        System.out.println(allAtStart + " " + allStacked + " " + YutResults.size());
+
         // 보드에 말이 없거나, 남은 말이 하나거나, 남은 말이 모두 업혀 있는 상태라면 자동으로 이동
         if ((allAtStart || allStacked || getCurrentPlayer().getRemainingTokens() == 1) && !YutResults.isEmpty()) {
             if (YutResults.get(0).getValue() < 4 || allStacked) {
@@ -299,6 +301,7 @@ public class Game {
 
                 if (YutResults.get(0).getValue() > 0) {
                     List<Position> positions = currentToken.getPosition().getNextPositions();
+                    boolean flag = currentToken.getPosition().getId() == 25 && shapeType == 4;
                     Position q = null;
                     for (Position p : positions) {
                         q = p;
@@ -306,7 +309,13 @@ public class Game {
                             if (q.isGoal()) {
                                 return q.getId();
                             }
-                            q = q.getNextPositions().get(0);
+                            if (shapeType == 4 && q.getId() == 25) { flag = true; }
+                            if (flag && q.getId() == 28) {
+                                System.out.println("hi");
+                                q = q.getNextPositions().get(1);
+                                flag = false;
+                            }
+                            else { q = q.getNextPositions().get(0); }
                         }
                     }
                     return q.getId();

@@ -30,7 +30,7 @@ public class TokenPanel extends JComponent implements KeyListener {
     };
     private int playerCount;
     private int tokenCount;
-    private int clickedToken;
+    private int clickedToken=0;
 
     public TokenPanel(BoardPanel board, ControlPanel control, StartPanel startPanel, GameController controller) {
         this.board = board;
@@ -39,7 +39,6 @@ public class TokenPanel extends JComponent implements KeyListener {
         this.playerCount = startPanel.getSelectedPlayerCount();
         this.tokenCount = startPanel.getSelectedTokenCount();
         this.drawOnSide = false;
-        this.clickedToken = 0;
         setOpaque(false);
 
         // 말 개수만큼 말 및 초기 위치 정보 추가
@@ -120,25 +119,18 @@ public class TokenPanel extends JComponent implements KeyListener {
         }
     }
 
-    // 노드 위에 있는 말의 개수에 따라 양옆으로 이동시켜야 함
     public void updateTokenPosition(int tokenId, int positionId) {
         int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
 
         if (positionId == -1) { // move off-screen
             SwingUtilities.invokeLater(() -> {
-                tokenPositions.set(idx, new Point2D.Double(50, 400));
+                tokenPositions.set(idx, new Point2D.Double(50, 600));
                 revalidate();
                 repaint();
             });
             return;
         }
 
-        int spacing = 0;
-        if (drawOnSide) {
-            System.out.println("옆에 그려야 함");
-            spacing = diameter;
-        }
-        int size = controller.numOfTokensOnPosition(positionId);
         int cellSize = board.getCellSize();
         int offsetX = board.getOffsetX();
         int offsetY = board.getOffsetY();
@@ -147,15 +139,7 @@ public class TokenPanel extends JComponent implements KeyListener {
         int x = board.toPixelX(grid.x, cellSize, offsetX);
         int y = board.toPixelY(grid.y, cellSize, offsetY);
 
-        // Calculate the offset to arrange tokens side by side
-
-        int tokenIndex = controller.getCurrentTokenId();
-
-        // Adjust x-coordinate based on the number of tokens at the same position
-        int xOffset = size * spacing;
-
-        // Position the token with calculated offset
-        tokenPositions.set(idx, new Point2D.Double(x - diameter / 2.0 + xOffset, y - diameter / 2.0));
+        tokenPositions.set(idx, new Point2D.Double(x - diameter / 2.0, y - diameter / 2.0));
 
         SwingUtilities.invokeLater(() -> {
             revalidate();
@@ -167,7 +151,6 @@ public class TokenPanel extends JComponent implements KeyListener {
     public void updateTokenPosition(int tokenId, Point2D.Double position) {
         int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
         tokenPositions.set(idx, position);
-
         SwingUtilities.invokeLater(() -> {
             revalidate();
             repaint();
@@ -205,9 +188,9 @@ public class TokenPanel extends JComponent implements KeyListener {
         this.clickable = clickable;
     }
 
-    public void setDrawOnSide(boolean drawOnSide) {
-        this.drawOnSide = drawOnSide;
-    }
+//    public void setDrawOnSide(boolean drawOnSide) {
+//        this.drawOnSide = drawOnSide;
+//    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -215,7 +198,6 @@ public class TokenPanel extends JComponent implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_R) {
-            System.out.println("you can now select a token");
             clickable = true;
         }
     }

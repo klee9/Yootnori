@@ -1,77 +1,37 @@
 package model;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private int playerId;
+    private int id;
     private String name;
     private List<Token> tokens;
     private int turns;
 
-    // 플레이어 생성자 플레이어 이름 ,플레이어 ID, 말의 개수, 말의 모양(type)로 생성한다.
-    public Player(String name, int playerId, int tokenCount, Color color, Board board) {
+    public Player(String name, int id, int tokenCount) {
         this.name = name;
-        this.playerId = playerId;
+        this.id = id;
         this.tokens = new ArrayList<>();
         this.turns = 1;
 
-        double startX = 650;
-        double startY = 250;
-        int diameter = 24;
-
         for (int i = 0; i < tokenCount; i++) {
-            int tokenId = playerId*10 + i;
-            double x = startX + diameter * i + i * 8;
-            double y = startY + diameter * playerId + playerId * 15;
-
-            Point2D.Double startPos = new Point2D.Double(x, y);
-            Position initialPosition = board.getStartPosition();
-            tokens.add(new Token(tokenId, color, this, board, startPos, initialPosition));
+            int tokenId = id*10 + i;
+            tokens.add(new Token(tokenId,this));
         }
-    }
-
-    public void setTokens(List<Token> tokens) {
-        this.tokens = tokens;
-    }
-
-    public void removeToken(Token token) {
-        this.tokens.remove(token);
-    }
-
-    public void resetTokens() {
-        for (Token token : tokens) {
-            token.reset(); // 각 토큰 초기화
-        }
-    }
-
-    public int getRemainingTokens() {
-        int cnt = 0;
-        for (Token token : tokens) {
-            if (!token.isFinished()) {
-                cnt++;
-            }
-        }
-        return cnt;
     }
 
     public void addTurn(int count) {
         this.turns += count;
     }
 
-    public boolean hasFinished() {
-        for (Token token : tokens) {
-            if (!token.isFinished()) {
-                return false;
-            }
-        }
-        return true;
+    public int getRemainingTokens() {
+        return (int) tokens.stream().filter(token -> !token.isFinished()).count();
     }
 
-    public String getName() { return name; }
-    public int getPlayerId() { return playerId; }
+    // getters
     public int getTurns() { return turns; }
+    public String getName() { return name; }
+    public int getId() { return id; }
     public List<Token> getTokens(){ return tokens; }
 }

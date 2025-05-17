@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import controller.GameController;
 import model.Player;
+import model.Token;
 import model.TossResult;
 
 import java.awt.*;
@@ -28,7 +29,6 @@ public class ControlPanel extends JPanel {
         setPreferredSize(new Dimension(800, 100));
         setLayout(new FlowLayout());
 
-        // 클릭 이벤트는 이후 연결 예정
         randomYutButton.addActionListener(e -> {
             System.out.println("랜덤 윷 던지기 클릭됨");
             tossResult = controller.onRandomToss();
@@ -38,8 +38,6 @@ public class ControlPanel extends JPanel {
             int autoMove = controller.onAutoControl();
             if (autoMove != -1) {
                 int posId = board.autoClickPosition(autoMove);
-                int tokenId = controller.getCurrentTokenId();
-                tokenPanel.updateTokenPosition(tokenId, posId);
                 controller.onMoveTokens(controller.findPositionById(posId));
             }
         });
@@ -57,8 +55,6 @@ public class ControlPanel extends JPanel {
                     int autoMove = controller.onAutoControl();
                     if (autoMove != -1) {
                         int posId = board.autoClickPosition(autoMove);
-                        int tokenId = controller.getCurrentTokenId();
-                        tokenPanel.updateTokenPosition(tokenId, posId);
                         controller.onMoveTokens(controller.findPositionById(posId));
                     }
                 });
@@ -124,32 +120,32 @@ public class ControlPanel extends JPanel {
         repaint();
     }
 
-    public void promptCapture() {
-        Object[] options = {"예", "아니오"};
-        int choice = JOptionPane.showOptionDialog(null, "말을 잡으시겠습니까?", "말 잡기",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-
-        if (choice == 0) {
-            controller.onConfirmCapture(true);
-            tokenPanel.setDrawOnSide(false);
-        }
-        else if (choice == 1) {
-            tokenPanel.setDrawOnSide(true);
-            tokenPanel.updateTokenPosition(controller.getCurrentTokenId(), controller.getCurrentTokenPos());
-        }
-    }
-
-    public void promptStack() {
-        Object[] options = {"예", "아니오"};
-        int choice = JOptionPane.showOptionDialog(null, "말을 업으시겠습니까?", "말 업기",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-
-        if (choice == 0) {
-            controller.onConfirmStack(true);
-            tokenPanel.setDrawOnSide(false);
-        }
-        else if (choice == 1) { tokenPanel.setDrawOnSide(true); }
-    }
+//    public void promptCapture() {
+//        Object[] options = {"예", "아니오"};
+//        int choice = JOptionPane.showOptionDialog(null, "말을 잡으시겠습니까?", "말 잡기",
+//                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+//
+//        if (choice == 0) {
+//            controller.onConfirmCapture(true);
+//            tokenPanel.setDrawOnSide(false);
+//        }
+//        else if (choice == 1) {
+//            tokenPanel.setDrawOnSide(true);
+//            tokenPanel.updateTokenPosition(controller.getCurrentTokenId(), controller.getCurrentTokenPos());
+//        }
+//    }
+//
+//    public void promptStack() {
+//        Object[] options = {"예", "아니오"};
+//        int choice = JOptionPane.showOptionDialog(null, "말을 업으시겠습니까?", "말 업기",
+//                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+//
+//        if (choice == 0) {
+//            controller.onConfirmStack(true);
+//            //tokenPanel.setDrawOnSide(false);
+//        }
+//        else if (choice == 1) { tokenPanel.setDrawOnSide(true); }
+//    }
 
     public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
     public int getLabelsSize() { return resultLabels.size(); }

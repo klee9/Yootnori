@@ -10,12 +10,10 @@ public enum TossResult {
 
     private final int value;
 
-    // Constructor
     TossResult(int value) {
         this.value = value;
     }
 
-    // Getter
     public int getValue() {
         return value;
     }

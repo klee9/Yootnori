@@ -128,7 +128,6 @@ public class MainWindow extends JFrame implements UiInterface {
             controller.onConfirmRestart();
             restartGame();
         } else if (choice == JOptionPane.NO_OPTION) {
-            controller.onConfirmExit();
             System.exit(0);
         }
     }

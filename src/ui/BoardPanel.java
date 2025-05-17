@@ -116,12 +116,11 @@ public class BoardPanel extends JPanel {
                         System.out.println("[BoardPanel] 해당 위치로 움직일 수 없습니다. 다시 시도하세요.");
                     } else {
                         System.out.println("[BoardPanel] 말을 " + posId + "번째 칸으로 이동했습니다.");
-                        tokenPanel.updateTokenPosition(currentToken, posId);
-                        controller.onStackTokens(controller.findTokenById(currentToken), controller.onClickPosition(posId));
-                        for (Token t : stackedTokens) {
-                            System.out.println("Moving stacked tokens...");
-                            tokenPanel.updateTokenPosition(t.getId(), posId);
-                        }
+                        //tokenPanel.updateTokenPosition(currentToken, posId);
+//                        controller.onStackTokens(controller.findTokenById(currentToken), controller.onClickPosition(posId));
+//                        for (Token t : stackedTokens) {
+//                            tokenPanel.updateTokenPosition(t.getId(), posId);
+//                        }
                         tokenPanel.setClickable(true);
                         tokenPanel.repaint();
                         setClickable(false);
@@ -518,7 +517,6 @@ public class BoardPanel extends JPanel {
         );
 
         dispatchEvent(clickEvent);
-        System.out.println("[BoardPanel] Programmatically clicked position: " + positionId);
         return positionId;
     }
 

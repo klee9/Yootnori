@@ -124,6 +124,7 @@ public class GameController implements GameEventListener {
 
     // getters
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getId(); }
+    public int getCurrentTokenId(){return game.getCurrentToken().getId();}
     public Position findPositionById(int id) { return game.idToPosition(id); }
     public Token findTokenById(int id) {
         return game.getPlayers().stream()

@@ -328,6 +328,7 @@ public class Game {
     // getters
     public Player getPrevPlayer() { return players.get((currentPlayerId-1+playerCount)%playerCount); }
     public Player getCurrentPlayer() { return players.get(currentPlayerId); }
+    public Token getCurrentToken() {return currentToken;}
     public List<Player> getPlayers() { return players; }
     public Position idToPosition(int id) { return board.getPositions().get(id); }
 

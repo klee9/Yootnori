@@ -1,19 +1,19 @@
 package controller;
 
 import model.*;
-import ui.swing.ControlPanel;
-import ui.swing.MainWindow;
-import ui.swing.PlayerInfoPanel;
-import ui.swing.TokenPanel;
+import ui.interfaces.ControlPanel;
+import ui.interfaces.MainWindow;
+import ui.interfaces.PlayerInfoPanel;
+import ui.interfaces.TokenPanel;
 
 import javax.swing.*;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 public class GameController implements GameEventListener {
-    private final MainWindow mainWindow;
+    private MainWindow mainWindow;
     private PlayerInfoPanel infoPanel;
-    private ControlPanel control;
+    private ControlPanel controlPanel;
     private TokenPanel tokenPanel;
     private final Game game;
 
@@ -36,27 +36,27 @@ public class GameController implements GameEventListener {
         }
     }
 
-    private void handleTokenFinished(Token token) {
+    public void handleTokenFinished(Token token) {
         tokenPanel.updateTokenPosition(token.getId(), -1);
         for (Token t : token.getStackedTokens()) {
             tokenPanel.updateTokenPosition(t.getId(), -1);
         }
     }
 
-    private void handleNextTurn() {
+    public void handleNextTurn() {
         infoPanel.updateCurrentPlayer(game.getCurrentPlayer().getId(), game.getPrevPlayer().getRemainingTokens(), game.getCurrentPlayer().getRemainingTokens());
-        control.showTossButtons();
+        controlPanel.showTossButtons();
     }
 
     private void handleTurnTransition() {
-        Timer timer = new Timer(1500, e -> { control.showTossButtons(); });
+        Timer timer = new Timer(1500, e -> { controlPanel.showTossButtons(); });
         timer.setRepeats(false);
         timer.start();
     }
 
     private void handleTurnsLeft(int remainingTurns) {
         if (remainingTurns == 0) {
-            control.showTossButtons();
+            controlPanel.showTossButtons();
         }
     }
 
@@ -120,11 +120,10 @@ public class GameController implements GameEventListener {
     // setters
     public void setInfoPanel(PlayerInfoPanel infoPanel) { this.infoPanel = infoPanel; }
     public void setTokenPanel(TokenPanel tokenPanel) { this.tokenPanel = tokenPanel; }
-    public void setControlPanel(ControlPanel control) { this.control = control; }
+    public void setControlPanel(ControlPanel control) { this.controlPanel = control; }
 
     // getters
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getId(); }
-    public int getCurrentTokenId(){return game.getCurrentToken().getId();}
     public Position findPositionById(int id) { return game.idToPosition(id); }
     public Token findTokenById(int id) {
         return game.getPlayers().stream()

@@ -289,8 +289,6 @@ public class Game {
         boolean allStacked = currentToken.getStackedTokens().size() == (getCurrentPlayer().getRemainingTokens()-1);
         boolean allAtStart = tokens.stream().allMatch(t -> t.getPosition().isStart());
 
-        System.out.println(allAtStart + " " + allStacked + " " + YutResults.size());
-
         // 보드에 말이 없거나, 남은 말이 하나거나, 남은 말이 모두 업혀 있는 상태라면 자동으로 이동
         if ((allAtStart || allStacked || getCurrentPlayer().getRemainingTokens() == 1) && !YutResults.isEmpty()) {
             if (YutResults.get(0).getValue() < 4 || allStacked) {

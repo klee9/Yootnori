@@ -67,7 +67,7 @@ public class GameController implements GameEventListener {
     private void handleTokenCaptured(List<Token> capturedTokens) {
         for (Token t : capturedTokens) {
             System.out.println("captured token: " + t.getId());
-            tokenPanel.updateTokenPosition(t.getId(), t.getInitialCoordinates());
+            tokenPanel.updateTokenPosition(t.getId(), t.getInitialX(), t.getInitialY());
         }
     }
 

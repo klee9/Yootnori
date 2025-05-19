@@ -16,7 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class TokenTest {
     private Token token1, token2, token3, token4;
     private Position initialPosition, newPosition;
-    private Point2D.Double initialCoordinates;
+
+    private double initialX;
+    private double initialY;
+
     private Player player;
     private Board board;
 
@@ -36,7 +39,8 @@ class TokenTest {
         double x = startX + diameter * ownerId + ownerId * 8;
         double y = startY + diameter * ownerId + ownerId * 15;
 
-        initialCoordinates = new Point2D.Double(x, y);
+        initialX = x;
+        initialY = y;
 
         token1 = new Token(0, player);
         token2 = new Token(1, player);
@@ -137,7 +141,12 @@ class TokenTest {
     }
 
     @Test
-    void testGetInitialCoordinates() {
-        assertEquals(initialCoordinates, token1.getInitialCoordinates());
+    void testGetInitialX() {
+        assertEquals(initialX, token1.getInitialX());
+    }
+
+    @Test
+    void testGetInitialY() {
+        assertEquals(initialY, token1.getInitialY());
     }
 }

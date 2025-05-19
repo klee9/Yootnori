@@ -15,7 +15,7 @@ public class Token {
 
     private Position position;
     private Position initialPosition;
-    private Point2D.Double initialCoordinates;
+    private double initialX, initialY;
 
     public Token(int id, Player owner) {
         this.id = id;
@@ -37,7 +37,8 @@ public class Token {
 
         this.position = initialPosition;
         this.initialPosition = initialPosition;
-        this.initialCoordinates = new Point2D.Double(x, y);
+        this.initialX = x;
+        this.initialY = y;
     }
 
     public void moveTo(Position newPos) {
@@ -94,5 +95,6 @@ public class Token {
     public boolean isFinished() { return isFinished; }
     public Position getPosition() { return position; }
     public List<Token> getStackedTokens(){ return stackedTokens; }
-    public Point2D.Double getInitialCoordinates() { return initialCoordinates; }
+    public double getInitialX() { return initialX; }
+    public double getInitialY() { return initialY; }
 }

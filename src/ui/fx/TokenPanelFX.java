@@ -92,7 +92,7 @@ public class TokenPanelFX extends Pane implements TokenPanel {
         int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
 
         if (positionId == -1) {
-            tokenPositions.set(idx, new Point2D(50, 400));
+            tokenPositions.set(idx, new Point2D(50, 600));
             repaint();
             return;
         }
@@ -111,12 +111,11 @@ public class TokenPanelFX extends Pane implements TokenPanel {
     }
 
     @Override
-    public void updateTokenPosition(int tokenId, Object pos) {
-        if (pos instanceof Point2D position) {
-            int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
-            tokenPositions.set(idx, position);
-            repaint();
-        }
+    public void updateTokenPosition(int tokenId, double x, double y) {
+        Point2D position = new Point2D(x, y);
+        int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
+        tokenPositions.set(idx, position);
+        repaint();
     }
 
     public void setClickable(boolean clickable) {

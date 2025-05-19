@@ -149,15 +149,14 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
 
     // Overloading: 잡혔을 때 시작 위치로 토큰을 보낼 때만 사용
     @Override
-    public void updateTokenPosition(int tokenId, Object pos) {
-        if (pos instanceof Point2D.Double position) {
-            int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
-            tokenPositions.set(idx, position);
-            SwingUtilities.invokeLater(() -> {
-                revalidate();
-                repaint();
-            });
-        }
+    public void updateTokenPosition(int tokenId, double x, double y) {
+        Point2D position = new Point2D.Double(x, y);
+        int idx = (tokenId / 10) * tokenCount + (tokenId % 10);
+        tokenPositions.set(idx, position);
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
     }
 
     @Override

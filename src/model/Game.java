@@ -178,10 +178,10 @@ public class Game {
         return board.getPositions().get(pid);
     }
 
-    public void selectToken(int tokenIndex) {
+    public void selectToken(int tid) {
         // 본인의 말만 선택 가능
-        if (currentPlayerId == tokenIndex/10) {
-            currentToken = players.get(currentPlayerId).getTokens().get(tokenIndex % 10);
+        if (currentPlayerId == tid/10) {
+            currentToken = players.get(currentPlayerId).getTokens().get(tid % 10);
             System.out.printf("[Game] Token%d 선택됨. (현재 위치: %d)\n", currentToken.getId(), currentToken.getPosition().getId());
         }
     }
@@ -232,6 +232,9 @@ public class Game {
     }
 
     public void handleCapturing(Token token, Position position) {
+        // 중복된 턴 추가 방지하기 위한 배열
+        int[] counted = new int[playerCount];
+
         // 도착 노드에 있는 말 확인
         List<Token> capturableTokens = getTokensAt(position);
 
@@ -248,11 +251,19 @@ public class Game {
                 }
                 System.out.println("을(를) 잡았습니다.");
 
+                // 업힌 말에 대해서 중복된 턴 추가 금지
+                if (counted[targetToken.getOwner().getId()] == 1) {
+                    getCurrentPlayer().addTurn(-1);
+                }
+                counted[targetToken.getOwner().getId()] = 1;
+
                 if (currentMove.getValue() < 4) {
                     pcs.firePropertyChange("turnsLeft", null, 0); // showTossButton() 실행
                 }
             }
         }
+
+        // 중복 턴 추가 방지 (같은 플레이어의 말을 여러개 잡아도 1만 추가)
         capturedTokens.forEach(Token::reset);
         pcs.firePropertyChange("capturedTokens", null, capturedTokens); // UI: 업힌 말 모두 리셋
     }

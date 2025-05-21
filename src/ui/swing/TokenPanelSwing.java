@@ -69,7 +69,6 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
                             SwingUtilities.convertMouseEvent(TokenPanelSwing.this, e, board)
                     );
                 }
-                //control.showTossButtons();
             }
         });
 
@@ -202,8 +201,7 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
         }
     }
     @Override
-    public void keyPressed(KeyEvent e) {
-    }
+    public void keyPressed(KeyEvent e) {}
     @Override
     public void keyReleased(KeyEvent e) {}
 }

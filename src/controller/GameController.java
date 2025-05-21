@@ -125,12 +125,4 @@ public class GameController implements GameEventListener {
     // getters
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getId(); }
     public Position findPositionById(int id) { return game.idToPosition(id); }
-    public Token findTokenById(int id) {
-        return game.getPlayers().stream()
-                .flatMap(player -> player.getTokens().stream())
-                .filter(t -> t.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
 }

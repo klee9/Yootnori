@@ -35,7 +35,7 @@ public class BoardPanelSwing extends JPanel implements BoardPanel {
     private boolean clickable = false;
     private TokenPanelSwing tokenPanel;
 
-    public BoardPanelSwing(String shapeType, GameController controller) {
+    public BoardPanelSwing(String shapeType, MainWindowSwing mainWindow) {
         this.shapeType = shapeType;
         setPreferredSize(new Dimension(800, 800));
         setBackground(Color.WHITE);
@@ -91,22 +91,13 @@ public class BoardPanelSwing extends JPanel implements BoardPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (clickable) {
-                    int posId = handleNodeClick(e);
-                    int currentToken = tokenPanel.getCurrentToken();
-
-                    if (currentToken == -1) {
-                        System.out.println("[BoardPanel] 잘못된 토큰 선택. 현재 플레이어의 토큰이 아닙니다.");
-                        tokenPanel.setClickable(true);
-                        return;
-                    }
-
-                    boolean moveResult = controller.onMoveTokens(controller.onClickPosition(posId));
+                    int pid = handleNodeClick(e);
+                    boolean moveResult = mainWindow.onMoveTokens(pid);
                     if (!moveResult) {
                         System.out.println("[BoardPanel] 해당 위치로 움직일 수 없습니다. 다시 시도하세요.");
                     } else {
-                        System.out.println("[BoardPanel] 말을 " + posId + "번째 칸으로 이동했습니다.");
+                        System.out.println("[BoardPanel] 말을 " + pid + "번째 칸으로 이동했습니다.");
                         tokenPanel.setClickable(true);
-                        tokenPanel.repaint();
                         setClickable(false);
                     }
                 }

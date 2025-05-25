@@ -37,14 +37,15 @@ public class BoardPanelFX extends Pane implements BoardPanel {
     private int[] rawToId;
 
     private boolean clickable = false;
+
+    private MainWindowFX mainWindow;
     private TokenPanelFX tokenPanel;
-    private final GameController controller;
 
     private final Canvas canvas = new Canvas();
 
-    public BoardPanelFX(int playerCount, int tokenCount, String shapeType, GameController controller) {
+    public BoardPanelFX(String shapeType, MainWindowFX mainWindow) {
         this.shapeType = shapeType;
-        this.controller = controller;
+        this.mainWindow = mainWindow;
 
         setPrefSize(600, 600);
 
@@ -251,7 +252,7 @@ public class BoardPanelFX extends Pane implements BoardPanel {
             return;
         }
 
-        boolean ok = controller.onMoveTokens(controller.onClickPosition(posId));
+        boolean ok = mainWindow.onMoveTokens(posId);
         if (!ok) {
             System.out.println("[BoardPanel] 해당 위치로 움직일 수 없습니다. 다시 시도하세요.");
         } else {

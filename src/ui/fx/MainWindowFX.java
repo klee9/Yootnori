@@ -1,5 +1,6 @@
 package ui.fx;
 
+import controller.GameEventListener;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -12,6 +13,7 @@ import model.Game;
 import model.Player;
 
 import controller.GameController;
+import model.TossResult;
 import ui.interfaces.MainWindow;
 
 import java.util.Optional;
@@ -30,7 +32,7 @@ public class MainWindowFX extends Application implements MainWindow {
     private PlayerInfoPanelFX infoPanel;
 
     private Game game;
-    private GameController controller;
+    private GameEventListener controller;
 
     @Override
     public void init() {
@@ -91,12 +93,9 @@ public class MainWindowFX extends Application implements MainWindow {
 
     @Override
     public void showGameScreen(int playerCount, int tokenCount, String shapeType) {
-        boardPanel = new BoardPanelFX(playerCount, tokenCount, shapeType, controller);
-        //boardPanel.setPrefSize(800, 800);
-
-        controlPanel = new ControlPanelFX(controller, boardPanel);
-        tokenPanel = new TokenPanelFX(boardPanel, controlPanel, startPanel, controller);
-
+        boardPanel = new BoardPanelFX(shapeType, this);
+        controlPanel = new ControlPanelFX(this, boardPanel);
+        tokenPanel = new TokenPanelFX(boardPanel, this, playerCount, tokenCount);
         infoPanel = new PlayerInfoPanelFX(playerCount, tokenCount);
 
         boardPanel.setTokenPanel(tokenPanel);
@@ -144,4 +143,13 @@ public class MainWindowFX extends Application implements MainWindow {
     }
 
     public void run() { launch(); }
+
+    public void onClickToken(int tid) { controller.onClickToken(tid); }
+    public boolean onMoveTokens(int pid) { return controller.onMoveTokens(controller.onClickPosition(pid)); }
+
+    public int onAutoControl() { return controller.onAutoControl(); }
+    public int getCurrentPlayerId() { return controller.getCurrentPlayerId(); }
+
+    public TossResult onRandomToss() { return controller.onRandomToss(); }
+    public TossResult onSpecifiedToss(TossResult tossResult) { return controller.onSpecifiedToss(tossResult); }
 }

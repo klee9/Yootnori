@@ -123,6 +123,8 @@ public class GameController implements GameEventListener {
     public void setControlPanel(ControlPanel control) { this.controlPanel = control; }
 
     // getters
+    @Override
     public int getCurrentPlayerId() { return game.getCurrentPlayer().getId(); }
+    @Override
     public Position findPositionById(int id) { return game.idToPosition(id); }
 }

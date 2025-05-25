@@ -1,6 +1,5 @@
 package ui.fx;
 
-import controller.GameController;
 import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -14,7 +13,6 @@ public class StartPanelFX extends GridPane implements StartPanel {
     private final ComboBox<String> shapeCombo = new ComboBox<>();
     private final ComboBox<Integer> playerCombo = new ComboBox<>();
     private final ComboBox<Integer> tokenCombo = new ComboBox<>();
-    private GameController controller;
 
     public StartPanelFX(Runnable onStart) {
         setPadding(new Insets(20));

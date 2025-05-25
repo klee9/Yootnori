@@ -1,17 +1,20 @@
 package ui.swing;
 
+import controller.GameEventListener;
 import model.Player;
 
 import javax.swing.*;
 
 import controller.GameController;
+import model.Position;
+import model.TossResult;
 import ui.interfaces.MainWindow;
 
 import java.awt.*;
 
 public class MainWindowSwing extends JFrame implements MainWindow {
 
-    private GameController controller;
+    private GameEventListener controller;
     private StartPanelSwing startPanel;
     private TokenPanelSwing tokenPanel;
     private BoardPanelSwing boardPanel;
@@ -42,7 +45,7 @@ public class MainWindowSwing extends JFrame implements MainWindow {
             controller.onGameStart(players, tokens, shape);
             showGameScreen(players,tokens,shape); // 판 그리기 화면으로 전환
         });
-        setContentPane((JPanel) startPanel);
+        setContentPane(startPanel);
         revalidate();
         repaint();
     }
@@ -69,12 +72,12 @@ public class MainWindowSwing extends JFrame implements MainWindow {
 
     @Override
     public void showGameScreen(int playerCount, int tokenCount, String shapeType) {
-        boardPanel = new BoardPanelSwing(shapeType, controller);
-        controlPanel = new ControlPanelSwing(controller, boardPanel);
-        tokenPanel = new TokenPanelSwing(boardPanel, controlPanel, startPanel, controller);
-        boardPanel.setTokenPanel(tokenPanel);
-        controlPanel.setTokenPanel(tokenPanel);
+        boardPanel = new BoardPanelSwing(shapeType, this);
+        controlPanel = new ControlPanelSwing(this, boardPanel);
+        tokenPanel = new TokenPanelSwing(boardPanel, this, playerCount, tokenCount);
         infoPanel = new PlayerInfoPanelSwing(playerCount, tokenCount);
+
+        boardPanel.setTokenPanel(tokenPanel);
         controller.setInfoPanel(infoPanel);
         controller.setTokenPanel(tokenPanel);
         controller.setControlPanel(controlPanel);
@@ -118,4 +121,13 @@ public class MainWindowSwing extends JFrame implements MainWindow {
             System.exit(0);
         }
     }
+
+    public void onClickToken(int tid) { controller.onClickToken(tid); }
+    public boolean onMoveTokens(int pid) { return controller.onMoveTokens(controller.onClickPosition(pid)); }
+
+    public int onAutoControl() { return controller.onAutoControl(); }
+    public int getCurrentPlayerId() { return controller.getCurrentPlayerId(); }
+
+    public TossResult onRandomToss() { return controller.onRandomToss(); }
+    public TossResult onSpecifiedToss(TossResult tossResult) { return controller.onSpecifiedToss(tossResult); }
 }

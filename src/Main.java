@@ -1,5 +1,4 @@
 import controller.GameController;
-import javafx.application.Application;
 import model.Game;
 import ui.fx.MainWindowFX;
 import ui.swing.MainWindowSwing;

@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PlayerInfoPanelSwing extends JPanel implements PlayerInfoPanel {
-    private JLabel[] playerLabels;
+    private final JLabel[] playerLabels;
     private final Color[] colors = {
             new Color(100, 149, 237), // 파랑
             new Color(240, 128, 128), // 빨강
@@ -46,8 +46,8 @@ public class PlayerInfoPanelSwing extends JPanel implements PlayerInfoPanel {
     @Override
     public void updateCurrentPlayer(int playerIndex, int remainingPrev, int remainingNext) {
         System.out.println("[InfoPanel] Player " + (playerIndex + 1) + "의 차례입니다.");
-        playerLabels[(playerIndex-1+playerLabels.length) % playerLabels.length].setText(
-                "<html>Player " + ((playerIndex-1+playerLabels.length) % playerLabels.length + 1) + "<br>남은 말: " + remainingPrev + "개</html>");
+        int i = (playerIndex-1+playerLabels.length) % playerLabels.length;
+        playerLabels[i].setText("<html>Player " + (i + 1) + "<br>남은 말: " + remainingPrev + "개</html>");
         playerLabels[playerIndex].setText("<html><b>Player " + (playerIndex + 1) + "◀<br>남은 말: " + remainingNext + "개</b></html>");
     }
 }

@@ -11,33 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ControlPanelSwing extends JPanel implements ControlPanel {
-    private GameController controller;
-    private BoardPanelSwing board;
-    private TokenPanelSwing tokenPanel;
-
     JButton randomYutButton = new JButton("랜덤 윷 던지기");
     JButton fixedYutButton = new JButton("지정 윷 던지기");
-    private JLabel resultLabel;
-    private List<JLabel> resultLabels = new ArrayList<>();
+    private final List<JLabel> resultLabels = new ArrayList<>();
     private TossResult tossResult;
 
-    public ControlPanelSwing(GameController controller, BoardPanelSwing board) {
-        this.controller = controller;
-        this.board = board;
-
+    public ControlPanelSwing(MainWindowSwing mainWindow, BoardPanelSwing board) {
         setPreferredSize(new Dimension(800, 100));
         setLayout(new FlowLayout());
 
         randomYutButton.addActionListener(e -> {
             System.out.println("랜덤 윷 던지기 클릭됨");
-            tossResult = controller.onRandomToss();
+            tossResult = mainWindow.onRandomToss();
             board.showYutImage(tossResult);
             showResultOnly(resultTranslate(tossResult));
             // 가능한 경로를 가져와서 마지막 경로 선택
-            int autoMove = controller.onAutoControl();
+            int autoMove = mainWindow.onAutoControl();
             if (autoMove != -1) {
-                int posId = board.autoClickPosition(autoMove);
-                controller.onMoveTokens(controller.findPositionById(posId));
+                int pid = board.autoClickPosition(autoMove);
+                mainWindow.onMoveTokens(pid);
             }
         });
 
@@ -47,14 +39,14 @@ public class ControlPanelSwing extends JPanel implements ControlPanel {
             for (TossResult res : TossResult.values()) {
                 JMenuItem item = new JMenuItem(res.name());
                 item.addActionListener(ev -> {
-                    tossResult = controller.onSpecifiedToss(res);
+                    tossResult = mainWindow.onSpecifiedToss(res);
                     board.showYutImage(tossResult);
                     showResultOnly(resultTranslate(tossResult));
                     // 가능한 경로를 가져와서 마지막 경로 선택
-                    int autoMove = controller.onAutoControl();
+                    int autoMove = mainWindow.onAutoControl();
                     if (autoMove != -1) {
-                        int posId = board.autoClickPosition(autoMove);
-                        controller.onMoveTokens(controller.findPositionById(posId));
+                        int pid = board.autoClickPosition(autoMove);
+                        mainWindow.onMoveTokens(pid);
                     }
                 });
                 menu.add(item);
@@ -99,7 +91,7 @@ public class ControlPanelSwing extends JPanel implements ControlPanel {
         }
 
         // 결과 라벨 생성 및 추가
-        resultLabel = new JLabel(result);
+        JLabel resultLabel = new JLabel(result);
         resultLabel.setFont(new Font("맑은 고딕", Font.BOLD, 24));
         resultLabel.setOpaque(true);
         resultLabel.setBackground(new Color(255, 240, 200));
@@ -113,6 +105,4 @@ public class ControlPanelSwing extends JPanel implements ControlPanel {
         revalidate();
         repaint();
     }
-
-    public void setTokenPanel(TokenPanelSwing tokenPanel) { this.tokenPanel = tokenPanel; }
 }

@@ -6,7 +6,6 @@ import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import controller.GameController;
 import model.TossResult;
 import ui.interfaces.ControlPanel;
 
@@ -15,8 +14,8 @@ import java.util.List;
 
 
 public class ControlPanelFX extends HBox implements ControlPanel {
-    private final GameController controller;
     private final BoardPanelFX board;
+    private final MainWindowFX mainWindow;
     private TokenPanelFX tokenPanel;
 
     Button randomYutButton = new Button("랜덤 윷 던지기");
@@ -25,9 +24,9 @@ public class ControlPanelFX extends HBox implements ControlPanel {
     private List<Label> resultLabels = new ArrayList<>();
     private TossResult tossResult;
 
-    public ControlPanelFX(GameController controller, BoardPanelFX board) {
-        this.controller = controller;
+    public ControlPanelFX(MainWindowFX mainWindow, BoardPanelFX board) {
         this.board = board;
+        this.mainWindow = mainWindow;
         setSpacing(12);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(10));
@@ -44,7 +43,7 @@ public class ControlPanelFX extends HBox implements ControlPanel {
 
     private void handleRandomToss() {
         System.out.println("랜덤 윷 던지기 클릭됨");
-        tossResult = controller.onRandomToss();
+        tossResult = mainWindow.onRandomToss();
         board.showYutImage(tossResult);
         showResultOnly(resultTranslate(tossResult));
         //가능한 경로를 가져와서 마지막 경로 선택
@@ -57,7 +56,7 @@ public class ControlPanelFX extends HBox implements ControlPanel {
         for (TossResult res : TossResult.values()) {
             MenuItem item = new MenuItem(res.name());
             item.setOnAction(ev -> {
-                tossResult = controller.onSpecifiedToss(res);
+                tossResult = mainWindow.onSpecifiedToss(res);
                 board.showYutImage(tossResult);
                 showResultOnly(resultTranslate(tossResult));
                 //가능한 경로를 가져와서 마지막 경로 선택
@@ -69,10 +68,10 @@ public class ControlPanelFX extends HBox implements ControlPanel {
     }
 
     private void autoMoveIfPossible() {
-        int autoMove = controller.onAutoControl();
+        int autoMove = mainWindow.onAutoControl();
         if (autoMove != -1) {
             int posId = board.autoClickPosition(autoMove);
-            controller.onMoveTokens(controller.findPositionById(posId));
+            mainWindow.onMoveTokens(posId);
         }
     }
 

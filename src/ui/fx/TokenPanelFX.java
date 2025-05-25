@@ -19,8 +19,7 @@ public class TokenPanelFX extends Pane implements TokenPanel {
 
     private final Canvas canvas = new Canvas();
     private final BoardPanelFX board;
-    private final ControlPanelFX control;
-    private final GameController controller;
+    private final MainWindowFX mainWindow;
 
     private final List<Integer> nodeIndices = new ArrayList<>();
     private final List<Integer> tokens = new ArrayList<>();
@@ -28,7 +27,6 @@ public class TokenPanelFX extends Pane implements TokenPanel {
 
     private boolean clickable = true;
     private final int diameter = 24;
-    private final int offsetCnt = 0;
 
     private final Color[] colors = {
             Color.CORNFLOWERBLUE,
@@ -41,12 +39,11 @@ public class TokenPanelFX extends Pane implements TokenPanel {
     private int tokenCount;
     private int clickedToken = 0;
 
-    public TokenPanelFX(BoardPanelFX board, ControlPanelFX control, StartPanelFX startPanel, GameController controller) {
+    public TokenPanelFX(BoardPanelFX board, MainWindowFX mainWindow, int playerCount, int tokenCount) {
         this.board = board;
-        this.control = control;
-        this.controller = controller;
-        this.playerCount = startPanel.getSelectedPlayerCount();
-        this.tokenCount = startPanel.getSelectedTokenCount();
+        this.mainWindow = mainWindow;
+        this.playerCount = playerCount;
+        this.tokenCount = tokenCount;
 
         getChildren().add(canvas);
         canvas.widthProperty().bind(widthProperty());
@@ -81,7 +78,7 @@ public class TokenPanelFX extends Pane implements TokenPanel {
         setClickable(false);
 
         if (tokenId != -1) {
-            controller.onClickToken(tokenId);
+            mainWindow.onClickToken(tokenId);
         } else {
             board.fireEvent(e); // 보드로 이벤트 전달
         }
@@ -179,7 +176,7 @@ public class TokenPanelFX extends Pane implements TokenPanel {
                 Point2D token = tokenPositions.get(i);
                 if (clickPoint.distance(token) < diameter) {
                     int tokenId = tokens.get(i);
-                    int currentPlayerId = controller.getCurrentPlayerId();
+                    int currentPlayerId = mainWindow.getCurrentPlayerId();
                     int tokenOwner = tokenId / 10;
                     if (currentPlayerId != tokenOwner) {
                         System.out.println("[TokenPanel] 현재 플레이어의 토큰이 아닙니다. 이동 불가.");

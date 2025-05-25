@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controller.GameController;
+import ui.interfaces.MainWindow;
 import ui.interfaces.TokenPanel;
 
 public class TokenPanelSwing extends JComponent implements KeyListener, TokenPanel {
-    private GameController controller;
+    private final MainWindowSwing mainWindow;
     private final BoardPanelSwing board;
-    private final ControlPanelSwing control;
 
     private final List<Integer> tokens = new ArrayList<>();
     private final List<Point2D> tokenPositions = new ArrayList<>();
@@ -32,12 +32,11 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
     private int tokenCount;
     private int clickedToken = 0;
 
-    public TokenPanelSwing(BoardPanelSwing board, ControlPanelSwing control, StartPanelSwing startPanel, GameController controller) {
+    public TokenPanelSwing(BoardPanelSwing board, MainWindowSwing mainWindow, int playerCount, int tokenCount) {
         this.board = board;
-        this.control = control;
-        this.controller = controller;
-        this.playerCount = startPanel.getSelectedPlayerCount();
-        this.tokenCount = startPanel.getSelectedTokenCount();
+        this.mainWindow = mainWindow;
+        this.playerCount = playerCount;
+        this.tokenCount = tokenCount;
         setOpaque(false);
 
         // 말 개수만큼 말 및 초기 위치 정보 추가
@@ -62,7 +61,7 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
 
                 // 토큰 아닌 곳 클릭 → 예약 취소하고 보드에 이벤트 넘김
                 if (tokenId != -1) {
-                    controller.onClickToken(tokenId);
+                    mainWindow.onClickToken(tokenId);
                 }
                 else {
                     board.dispatchEvent(
@@ -167,7 +166,7 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
                     Point2D token = tokenPositions.get(i);
                     if (clickPoint.distance(token.getX(), token.getY()) < diameter) {
                         int tokenId = tokens.get(i);
-                        int currentPlayerId = controller.getCurrentPlayerId();
+                        int currentPlayerId = mainWindow.getCurrentPlayerId();
                         int tokenOwner = tokenId / 10;
                         if (currentPlayerId != tokenOwner) {
                             System.out.println("[TokenPanel] 현재 플레이어의 토큰이 아닙니다. 이동 불가.");

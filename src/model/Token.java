@@ -1,68 +1,100 @@
 package model;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Token {
-    private int id;
-    private TokenType type;
-    private Position position;
-    private boolean isFinished;
-    private Player owner;
-    private List<Token> stackedTokens;  //말을 업을 때 사용하는 리스트
+    private final int id;
+    private final Player owner;
 
-    //  Player에서 Token을 생성할 때 사용하는 생성자
-    public Token(int id, TokenType type, Player owner) {
+    private boolean isFinished;
+    private List<Token> stackedTokens;
+
+    private Position position;
+    private Position initialPosition;
+    private double initialX, initialY;
+
+    public Token(int id, Player owner) {
         this.id = id;
-        this.type = type;
         this.owner = owner;
-        this.position = null;        // 아직 시작 위치 없음
-        this.isFinished = false;     // 초기 상태는 미완료
+        this.isFinished = false;
         this.stackedTokens = new ArrayList<>();
     }
 
-    public int getId() {
-        return id;
-    }
+    public void setPosition(Position initialPosition) {
+        double startX = 650; // TODO: hard-coded -> relative value로 바꾸기
+        double startY = 250;
 
-    public Position getPosition() {
-        return position;
-    }
+        int diameter = 24;
+        int i = id % 10;
+        int ownerId = owner.getId();
 
-    public boolean isFinished() {
-        return isFinished;
-    }
+        double x = startX + diameter * i + i * 8;
+        double y = startY + diameter * ownerId + ownerId * 15;
 
-    public void setFinished(boolean finished) {
-        isFinished = finished;
-    }
-
-    public Player getOwner() {
-        return owner;
-    }
-
-    public void reset() {
-        this.position = null;       // 시작 위치로 초기화 (출발점 없음)
-        this.isFinished = false;    // 다시 완주하지 않은 상태로 초기화
-    }
-
-    public List<Token> getStackedTokens(){
-        return stackedTokens;
-    }
-
-    public void stackWith(Token other) { // 말을 업음
-        this.stackedTokens.add(other);
-        this.stackedTokens.addAll(other.getStackedTokens()); // 업힌 말이 업고 있는 다른 말들을 업는다.
-        other.getStackedTokens().clear();
+        this.position = initialPosition;
+        this.initialPosition = initialPosition;
+        this.initialX = x;
+        this.initialY = y;
     }
 
     public void moveTo(Position newPos) {
         this.position = newPos;
-        for (Token t : stackedTokens) {
+        for (Token t : this.stackedTokens) {
             t.position = newPos;
         }
     }
 
+    public void setFinished(boolean finished) {
+        this.isFinished = finished;
+        for (Token token : this.stackedTokens) {
+            token.isFinished = finished;
+        }
+    }
+
+    public void reset() {
+        // 말과 업힌 말 모두 리셋
+        this.position = initialPosition;
+        this.isFinished = false;
+
+        for (Token token : this.stackedTokens) {
+            token.position = initialPosition;
+            token.isFinished = false;
+        }
+
+        // unstacking (업기 상태 해제)
+        for (Token token : this.stackedTokens) {
+            token.getStackedTokens().clear();
+        }
+        this.stackedTokens.clear();
+    }
+
+    // 현재 말과 대상 말 및 업힌 말을 모두 셋에 추가
+    // ex) 0이 1, 2와 업혀 있고, 1이 3, 4와 업혀 있다면, 전체 셋을 [0, 1, 2, 3, 4]로 초기화. 자기 자신에 해당하는 말을 삭제
+    public void stackWith(Token other) {
+        Set<Token> stack = new HashSet<>();
+        stack.add(this);
+        stack.add(other);
+        stack.addAll(this.stackedTokens);
+        stack.addAll(other.stackedTokens);
+
+        List<Token> combinedStack = new ArrayList<>(stack);
+
+        for (Token t : combinedStack) {
+            t.stackedTokens = new ArrayList<>(combinedStack);
+            t.stackedTokens.remove(t);
+        }
+    }
+
+    // getters
+    public int getId() { return id; }
+    public Player getOwner() { return owner; }
+    public boolean isFinished() { return isFinished; }
+    public Position getPosition() { return position; }
+    public List<Token> getStackedTokens(){ return stackedTokens; }
+    public double getInitialX() { return initialX; }
+    public double getInitialY() { return initialY; }
 }
-
-

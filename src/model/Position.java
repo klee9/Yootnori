@@ -1,31 +1,30 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Position {
-    private int id;
-    private boolean isStart = false;
-    private boolean isGoal = false;
-    private List<Position> prev_positions;
-    private List<Position> next_positions;
+    private final int id;
+    private final boolean isStart;
+    private final boolean isGoal;
+    private final List<Position> prevPositions;
+    private final List<Position> nextPositions;
 
-    public Position(int _id) {
-        this.id = _id;
-        if (id == 0) {
-            this.isStart = true;
-            this.isGoal = true;
-        }
+    public Position(int id) {
+        this.id = id;
+        this.nextPositions = new ArrayList<>();
+        this.prevPositions = new ArrayList<>();
+        this.isStart = id == 0;
+        this.isGoal = id == 0;
     }
 
-    public void addPrevPosition(Position node) {
-        if (node != null) {
-            prev_positions.add(node);
-        }
-    }
+    public void addPrevPosition(Position node) { prevPositions.add(node); }
+    public void addNextPosition(Position node) { nextPositions.add(node); }
 
-    public void addNextPosition(Position node) {
-        if (node != null) {
-            next_positions.add(node);
-        }
-    }
+    public boolean isStart() { return isStart; }
+    public boolean isGoal() { return isGoal; }
+
+    public int getId() { return id; }
+    public List<Position> getPrevPositions() { return prevPositions; }
+    public List<Position> getNextPositions() { return nextPositions; }
 }

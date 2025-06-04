@@ -1,6 +1,5 @@
 package ui.fx;
 
-import controller.GameController;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -21,7 +20,6 @@ public class TokenPanelFX extends Pane implements TokenPanel {
     private final BoardPanelFX board;
     private final MainWindowFX mainWindow;
 
-    private final List<Integer> nodeIndices = new ArrayList<>();
     private final List<Integer> tokens = new ArrayList<>();
     private final List<Point2D> tokenPositions = new ArrayList<>();
 
@@ -35,8 +33,8 @@ public class TokenPanelFX extends Pane implements TokenPanel {
             Color.LIGHTGREEN
     };
 
-    private int playerCount;
-    private int tokenCount;
+    private final int playerCount;
+    private final int tokenCount;
     private int clickedToken = 0;
 
     public TokenPanelFX(BoardPanelFX board, MainWindowFX mainWindow, int playerCount, int tokenCount) {
@@ -57,7 +55,7 @@ public class TokenPanelFX extends Pane implements TokenPanel {
         Platform.runLater(this::repaint);
 
         // 초기 토큰 위치 설정
-        double startX = 650;
+        double startX = 625;
         double startY = 250;
 
         for (int i = 0; i < playerCount; i++) {

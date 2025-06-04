@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private int id;
-    private String name;
-    private List<Token> tokens;
+    private final int id;
+    private final String name;
+    private final List<Token> tokens;
     private int turns;
 
     public Player(String name, int id, int tokenCount) {

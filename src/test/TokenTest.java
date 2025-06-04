@@ -30,7 +30,7 @@ class TokenTest {
         initialPosition = board.getPositions().get(0);
         newPosition = board.getPositions().get(1);
 
-        double startX = 650; // TODO: hard-coded -> relative values
+        double startX = 650;
         double startY = 250;
 
         int diameter = 24;

@@ -7,11 +7,9 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import controller.GameController;
-import ui.interfaces.MainWindow;
 import ui.interfaces.TokenPanel;
 
-public class TokenPanelSwing extends JComponent implements KeyListener, TokenPanel {
+public class TokenPanelSwing extends JComponent implements TokenPanel {
     private final MainWindowSwing mainWindow;
     private final BoardPanelSwing board;
 
@@ -40,7 +38,7 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
         setOpaque(false);
 
         // 말 개수만큼 말 및 초기 위치 정보 추가
-        double startX = 650;
+        double startX = 625;
         double startY = 250;
 
         for (int i = 0; i < playerCount; i++) {
@@ -70,8 +68,6 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
                 }
             }
         });
-
-
     }
 
     @Override
@@ -192,15 +188,4 @@ public class TokenPanelSwing extends JComponent implements KeyListener, TokenPan
     public void setClickable(boolean clickable) {
         this.clickable = clickable;
     }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_R) {
-            clickable = true;
-        }
-    }
-    @Override
-    public void keyPressed(KeyEvent e) {}
-    @Override
-    public void keyReleased(KeyEvent e) {}
 }

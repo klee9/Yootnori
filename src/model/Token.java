@@ -25,7 +25,7 @@ public class Token {
     }
 
     public void setPosition(Position initialPosition) {
-        double startX = 650; // TODO: hard-coded -> relative value로 바꾸기
+        double startX = 625;
         double startY = 250;
 
         int diameter = 24;
